@@ -1,18 +1,13 @@
-import mongoose from 'mongoose';
-import express from 'express';
-import bodyParser from 'body-parser';
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
-import cors from 'cors';
-import AdminBro from 'admin-bro';
-import AdminBroExpress from 'admin-bro-expressjs';
-import AdminBroMongoose from 'admin-bro-mongoose';
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const cors = require('cors');
 
-import Employee from './models/Employee.js'; // .js kengaytmasi bilan import qilamiz
-import EmployeeLog from './models/EmployeeLog.js'; // .js kengaytmasi bilan import qilamiz
-
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const Employee = require('./models/Employee');
+const EmployeeLog = require('./models/EmployeeLog');
 
 const app = express();
 const port = 5000;
@@ -68,24 +63,6 @@ app.get('/api/employees', async (req, res) => {
   res.json(employees);
 });
 
-// Admin panelni tayyorlash
-AdminBro.registerAdapter(AdminBroMongoose);
-
-const adminBro = new AdminBro({
-  databases: [mongoose],
-  resources: [
-    { resource: Employee },
-    { resource: EmployeeLog },
-  ],
-  rootPath: '/admin',
-});
-
-const adminBroRouter = AdminBroExpress.buildRouter(adminBro);
-
-app.use(adminBro.options.rootPath, adminBroRouter);
-
-// Serverni boshlash
 app.listen(port, () => {
-  
   console.log(`Server is running on http://localhost:${port}`);
 });
