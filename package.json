@@ -10,6 +10,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@adminjs/express": "^6.1.0",
+    "@adminjs/mongoose": "^4.1.0",
+    "admin-bro": "^4.0.1",
+    "admin-bro-expressjs": "^2.1.1",
+    "admin-bro-mongoose": "^0.5.2",
+    "adminjs": "^7.8.1",
+    "cors": "^2.8.5",
     "express": "^4.19.2",
     "fs": "^0.0.1-security",
     "mongoose": "^8.4.3",
