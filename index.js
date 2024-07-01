@@ -49,7 +49,7 @@ const FaceLog = mongoose.model('FaceLog', faceLogSchema);
 // Routes
 const verifyFace = async (descriptor) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/verify', {
+      const response = await axios.post('https://studentunion.uz/api/verify', {
         descriptor: Array.from(descriptor)
       });
       return response.data; // Bu yerga serverdan qaytgan malumotlarni olish uchun so'rovingizni qo'yishingiz kerak
