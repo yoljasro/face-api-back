@@ -47,17 +47,18 @@ const faceLogSchema = new mongoose.Schema({
 const FaceLog = mongoose.model('FaceLog', faceLogSchema);
 
 // Routes
-app.post('/api/verify', async (req, res) => {
-  const { descriptor } = req.body;
-  // Here you would implement your face verification logic
-  // For demonstration purposes, we'll just return a mock result
-  const match = {
-    id: '1',
-    name: 'John Doe',
+const verifyFace = async (descriptor) => {
+    try {
+      const response = await axios.post('http://localhost:5000/api/verify', {
+        descriptor: Array.from(descriptor)
+      });
+      return response.data; // Bu yerga serverdan qaytgan malumotlarni olish uchun so'rovingizni qo'yishingiz kerak
+    } catch (error) {
+      console.error('Error verifying face:', error);
+      return null;
+    }
   };
-  res.json(match);
-});
-
+  
 app.post('/api/log', async (req, res) => {
   const { employeeId, name, status, timestamp } = req.body;
   const logEntry = new FaceLog({
