@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const cors = require('cors')
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -20,7 +20,7 @@ mongoose.connect('mongodb+srv://yoljasron:9B4vu5ZWnHf8xl0u@face.60end2q.mongodb.
 });
 
 // Body parser middleware
-app.use(cors())
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -46,19 +46,32 @@ const faceLogSchema = new mongoose.Schema({
 
 const FaceLog = mongoose.model('FaceLog', faceLogSchema);
 
+// Face verification logic (dummy logic for example)
+const verifyFaceLogic = async (descriptor) => {
+  // Bu yerda yuzni aniqlash va tasdiqlash algoritmini qo'llang
+  // Masalan, descriptorlarni solishtirish
+  // ...
+
+  // Misol uchun, agar mos keladigan yuz topilgan bo'lsa:
+  return { id: '12345', name: 'John Doe' }; // Bu o'xshashlik topilgan holatda qaytariladigan obyekt
+};
+
 // Routes
-const verifyFace = async (descriptor) => {
-    try {
-      const response = await axios.post('https://studentunion.uz/api/verify', {
-        descriptor: Array.from(descriptor)
-      });
-      return response.data; // Bu yerga serverdan qaytgan malumotlarni olish uchun so'rovingizni qo'yishingiz kerak
-    } catch (error) {
-      console.error('Error verifying face:', error);
-      return null;
+app.post('/api/verify', async (req, res) => {
+  const { descriptor } = req.body;
+  try {
+    const match = await verifyFaceLogic(descriptor);
+    if (match) {
+      res.json(match);
+    } else {
+      res.status(404).send('Face not recognized');
     }
-  };
-  
+  } catch (error) {
+    console.error('Error verifying face:', error);
+    res.status(500).send('Error verifying face');
+  }
+});
+
 app.post('/api/log', async (req, res) => {
   const { employeeId, name, status, timestamp } = req.body;
   const logEntry = new FaceLog({
@@ -87,10 +100,8 @@ app.post('/api/upload', upload.array('files', 10), async (req, res) => {
   }
 
   try {
-    // Process each uploaded file (e.g., save to database, handle further processing)
     files.forEach(file => {
       console.log(`File uploaded: ${file.filename}`);
-      // Add your logic here to save file details or process further
     });
 
     res.status(200).send('Files uploaded successfully');
@@ -126,19 +137,6 @@ app.get('/api/files', (req, res) => {
   });
 });
 
-// Get uploaded files through /api/upload
-app.get('/api/upload', (req, res) => {
-  const uploadsDir = path.join(__dirname, 'uploads');
-  fs.readdir(uploadsDir, (err, files) => {
-    if (err) {
-      console.error('Error reading uploads directory:', err);
-      return res.status(500).send('Error reading uploads directory');
-    }
-    res.json(files);
-  });
-});
-
-// Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
