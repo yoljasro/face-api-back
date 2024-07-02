@@ -42,7 +42,6 @@ const faceLogSchema = new mongoose.Schema({
   name: String,
   status: String,
   timestamp: Date,
-  files: [String], // Fayl nomlarini saqlash uchun array
 });
 
 const FaceLog = mongoose.model('FaceLog', faceLogSchema);
@@ -54,11 +53,7 @@ const verifyFaceLogic = async (descriptor) => {
   // ...
 
   // Misol uchun, agar mos keladigan yuz topilgan bo'lsa:
-  const foundUser = await FaceLog.findOne({ descriptor }); // Bu yerni o'z logikangiz bilan to'ldiring
-  if (foundUser) {
-    return { id: foundUser.employeeId, name: foundUser.name };
-  }
-  return null; // Mos keladigan yuz topilmagan holatda
+  return { id: '12345', name: 'John Doe' }; // Bu o'xshashlik topilgan holatda qaytariladigan obyekt
 };
 
 // Routes
@@ -97,11 +92,11 @@ app.post('/api/log', async (req, res) => {
 });
 
 app.post('/api/upload', upload.array('files', 10), async (req, res) => {
-  const { employeeId, name } = req.body;
+  const { employeeId } = req.body;
   const files = req.files;
 
-  if (!employeeId || !name || !files) {
-    return res.status(400).json({ error: 'Employee ID, name, and files are required' });
+  if (!employeeId || !files) {
+    return res.status(400).json({ error: 'Employee ID and files are required' });
   }
 
   try {
@@ -109,20 +104,10 @@ app.post('/api/upload', upload.array('files', 10), async (req, res) => {
       console.log(`File uploaded: ${file.filename}`);
     });
 
-    const logEntry = new FaceLog({
-      employeeId,
-      name,
-      status: 'uploaded',
-      timestamp: new Date(),
-      files: files.map(file => file.filename), // Fayl nomlarini saqlash
-    });
-
-    await logEntry.save();
-
-    res.status(200).send('Files and data uploaded successfully');
+    res.status(200).send('Files uploaded successfully');
   } catch (error) {
-    console.error('Error uploading files and data:', error);
-    res.status(500).send('Error uploading files and data');
+    console.error('Error uploading files:', error);
+    res.status(500).send('Error uploading files');
   }
 });
 
