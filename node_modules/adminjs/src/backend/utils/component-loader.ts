@@ -1,8 +1,7 @@
 import * as path from 'path'
 import * as fs from 'fs'
-
-import { ConfigurationError } from './errors/index.js'
-import { relativeFilePathResolver } from '../../utils/file-resolver.js'
+import { ConfigurationError } from '.'
+import { relativeFilePathResolver } from '../../utils/file-resolver'
 
 export interface ComponentDetails {
   overrides: boolean
@@ -73,7 +72,7 @@ export class ComponentLoader {
   }
 
   public static resolveFilePath(filePath: string, caller: string): string {
-    const extensions = ['.jsx', '.js', '.ts', '.tsx', '.mts', '.mjs']
+    const extensions = ['.jsx', '.js', '.ts', '.tsx']
     const src = path.isAbsolute(filePath)
       ? filePath
       : relativeFilePathResolver(filePath, new RegExp(`.*.{1}${caller}`))
@@ -167,8 +166,5 @@ export class ComponentLoader {
     'DefaultTextareaShowProperty',
     'PropertyDescription',
     'PropertyLabel',
-    'Login',
-    'AuthenticationBackgroundComponent',
-    'Footer',
   ]
 }

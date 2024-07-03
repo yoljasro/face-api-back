@@ -1,6 +1,5 @@
-import { factory } from 'factory-girl'
-
-import { PageJSON } from '../../interfaces/index.js'
+import factory from 'factory-girl'
+import { PageJSON } from '../../interfaces'
 
 factory.define<PageJSON>('PageJSON', Object, {
   name: factory.sequence('PageJSON.name', (n) => `page${n}`),

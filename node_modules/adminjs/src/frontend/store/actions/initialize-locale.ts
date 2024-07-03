@@ -1,4 +1,4 @@
-import { Locale } from '../../../locale/config.js'
+import { Locale } from '../../../locale/config'
 
 export const LOCALE_INITIALIZE = 'LOCALE_INITIALIZE'
 

@@ -1,4 +1,4 @@
-import PropertyDecorator from '../../property/property-decorator.js'
+import PropertyDecorator from '../../property/property-decorator'
 
 /**
  * Bu default all subProperties are nested as an array in root Property. This is easy for

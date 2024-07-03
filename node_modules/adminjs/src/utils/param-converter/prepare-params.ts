@@ -1,7 +1,7 @@
-import { BaseResource } from '../../backend/adapters/resource/index.js'
-import { flat } from '../flat/index.js'
-import { convertNestedParam } from './convert-nested-param.js'
-import { convertParam } from './convert-param.js'
+import { BaseResource } from '../..'
+import { flat } from '../flat'
+import { convertNestedParam } from './convert-nested-param'
+import { convertParam } from './convert-param'
 
 const prepareParams = (
   params: Record<string, any>,

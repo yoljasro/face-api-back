@@ -1,3 +1,2 @@
-export * from './allow-override.js'
-export * from './with-no-ssr.js'
-export * from './with-notice.js'
+export * from './allow-override'
+export * from './with-notice'

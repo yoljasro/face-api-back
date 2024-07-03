@@ -1,15 +1,12 @@
-import { factory } from 'factory-girl'
-
-import './property-json.factory.js'
-import { PropertyJSON, ResourceJSON } from '../../interfaces/index.js'
-
-const propertyJson = await factory.build('PropertyJSON') as PropertyJSON
+import factory from 'factory-girl'
+import './property-json.factory'
+import { PropertyJSON, ResourceJSON } from '../../interfaces'
 
 factory.define<ResourceJSON>('ResourceJSON', Object, {
   id: factory.sequence('ResourceJSON.id', (i) => `resource${i}`),
   name: factory.sequence('ResourceJSON.name', (i) => `resource ${i}`),
   href: '/admin/resourceName',
-  titleProperty: () => propertyJson,
+  titleProperty: () => factory.build<PropertyJSON>('PropertyJSON'),
   navigation: {
     name: 'someName',
     icon: 'someIcon',
@@ -24,7 +21,7 @@ factory.define<ResourceJSON>('ResourceJSON', Object, {
   editProperties: [],
 })
 
-factory.extend('ResourceJSON', 'ResourceJSON.full', {}, {
+factory.extend<ResourceJSON>('ResourceJSON', 'ResourceJSON.full', {}, {
   afterBuild: async (model) => {
     const properties = [
       await factory.build<PropertyJSON>('PropertyJSON', { name: 'name', isTitle: true }),

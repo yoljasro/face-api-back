@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
-import { FormGroup, SelectAsync } from '@adminjs/design-system'
+import { FormGroup, Label, SelectAsync } from '@adminjs/design-system'
 
-import ApiClient from '../../../utils/api-client.js'
-import { FilterPropertyProps, SelectRecord } from '../base-property-props.js'
-import allowOverride from '../../../hoc/allow-override.js'
-import PropertyLabel from '../utils/property-label/property-label.js'
+import ApiClient from '../../../utils/api-client'
+import { FilterPropertyProps, SelectRecord } from '../base-property-props'
+import allowOverride from '../../../hoc/allow-override'
 
-type SelectOptions = Array<{ value: string | number; label: string }>
+type SelectOptions = Array<{value: string | number; label: string }>
 
 const Filter: React.FC<FilterPropertyProps> = (props) => {
   const { property, filter, onChange } = props
@@ -35,7 +34,7 @@ const Filter: React.FC<FilterPropertyProps> = (props) => {
 
   return (
     <FormGroup>
-      <PropertyLabel property={property} filter />
+      <Label>{property.label}</Label>
       <SelectAsync
         variant="filter"
         value={typeof selected === 'undefined' ? '' : selected}

@@ -1,11 +1,11 @@
-import AdminJS from './adminjs.js'
+import AdminJS from './adminjs'
 
-export * from './backend/index.js'
-export * from './frontend/index.js'
-export * from './locale/index.js'
-export * from './utils/index.js'
-export * from './constants.js'
-export * from './adminjs-options.interface.js'
-export * from './current-admin.interface.js'
+export * from './backend'
+export * from './frontend'
+export * from './locale'
+export * from './utils'
+export * from './constants'
+export * from './adminjs-options.interface'
+export * from './current-admin.interface'
 
 export default AdminJS

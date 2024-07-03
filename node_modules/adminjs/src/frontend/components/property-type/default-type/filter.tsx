@@ -1,14 +1,11 @@
 import React from 'react'
-import { FormGroup, Input, Select } from '@adminjs/design-system'
+import { FormGroup, Label, Input, Select } from '@adminjs/design-system'
 
-import allowOverride from '../../../hoc/allow-override.js'
-import { FilterPropertyProps } from '../base-property-props.js'
-import PropertyLabel from '../utils/property-label/property-label.js'
-import { useTranslation } from '../../../hooks/use-translation.js'
+import allowOverride from '../../../hoc/allow-override'
+import { FilterPropertyProps } from '../base-property-props'
 
 const Filter: React.FC<FilterPropertyProps> = (props) => {
   const { property, onChange, filter } = props
-  const { tl } = useTranslation()
 
   const handleInputChange = (event) => {
     onChange(property.path, event.target.value)
@@ -23,19 +20,13 @@ const Filter: React.FC<FilterPropertyProps> = (props) => {
     const filterKey = `filter-${property.path}`
     const value = filter[property.path] || ''
     if (property.availableValues) {
-      const availableValues = property.availableValues.map((v) => ({
-        ...v,
-        label: tl(`${property.path}.${v.value}`, property.resourceId, { defaultValue: v.label ?? v.value }),
-      }))
-
-      const selected = availableValues.find((av) => av.value === value)
-
+      const selected = property.availableValues.find((av) => av.value === value)
       return (
         <Select
           variant="filter"
           value={typeof selected === 'undefined' ? '' : selected}
           isClearable
-          options={availableValues}
+          options={property.availableValues}
           onChange={handleSelectChange}
         />
       )
@@ -51,7 +42,7 @@ const Filter: React.FC<FilterPropertyProps> = (props) => {
 
   return (
     <FormGroup variant="filter">
-      <PropertyLabel property={property} filter />
+      <Label>{property.label}</Label>
       {renderInput()}
     </FormGroup>
   )

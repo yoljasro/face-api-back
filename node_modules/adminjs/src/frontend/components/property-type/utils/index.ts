@@ -1,2 +1,1 @@
-export * from './property-label/index.js'
-export * from './property-description/index.js'
+export * from './property-label'

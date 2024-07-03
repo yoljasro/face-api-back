@@ -1,26 +1,23 @@
 import axios, { AxiosResponse, AxiosInstance, AxiosRequestConfig } from 'axios'
-
 import {
   ResourceActionParams,
   BulkActionParams,
   RecordActionParams,
   ActionParams,
-} from '../../backend/utils/view-helpers/view-helpers.js'
-import { RecordJSON } from '../interfaces/index.js'
-import { RecordActionResponse, ActionResponse, BulkActionResponse } from '../../backend/actions/action.interface.js'
+} from '../../backend/utils/view-helpers/view-helpers'
+
+/* eslint-disable no-alert */
+import { RecordJSON } from '../interfaces'
+import { RecordActionResponse, ActionResponse, BulkActionResponse } from '../../backend/actions/action.interface'
 
 let globalAny: any = {}
 
 try {
   globalAny = window
 } catch (error) {
-  if (!(error instanceof ReferenceError)) {
+  if (error.message !== 'window is not defined') {
     throw error
   } else {
-    globalAny = { isOnServer: true }
-  }
-} finally {
-  if (!globalAny) {
     globalAny = { isOnServer: true }
   }
 }
@@ -41,7 +38,7 @@ const checkResponse = (response: AxiosResponse): void => {
   if (response.request.responseURL
       && response.request.responseURL.match(loginUrl)
   ) {
-    // eslint-disable-next-line no-undef, no-alert
+    // eslint-disable-next-line no-undef
     alert('Your session expired. You will be redirected to login screen')
     globalAny.location.assign(loginUrl)
   }
@@ -232,7 +229,7 @@ class ApiClient {
    * @return  {Promise<AxiosResponse<any>>} response from the handler function defined in
    *                                     {@link AdminJSOptions#dashboard}
    */
-  async getDashboard<T = unknown>(options: AxiosRequestConfig = {}): Promise<AxiosResponse<T>> {
+  async getDashboard(options: AxiosRequestConfig = {}): Promise<AxiosResponse<any>> {
     const response = await this.client.get('/api/dashboard', options)
     checkResponse(response)
     return response
@@ -245,24 +242,13 @@ class ApiClient {
    * @return  {Promise<AxiosResponse<any>>}     response from the handler of given page
    *                                            defined in {@link AdminJSOptions#pages}
    */
-  async getPage<T = unknown>(options: GetPageAPIParams): Promise<AxiosResponse<T>> {
+  async getPage(options: GetPageAPIParams): Promise<AxiosResponse<any>> {
     const { pageName, ...axiosParams } = options
     const response = await this.client.request({
       url: `/api/pages/${pageName}`,
       ...axiosParams,
     })
     checkResponse(response)
-    return response
-  }
-
-  async refreshToken(data: Record<string, any>) {
-    const response = await this.client.request({
-      url: '/refresh-token',
-      method: 'POST',
-      data,
-    })
-    checkResponse(response)
-
     return response
   }
 }

@@ -1,15 +1,15 @@
 import React from 'react'
 import { Badge } from '@adminjs/design-system'
 
-import { ShowPropertyProps } from '../base-property-props.js'
-import { useTranslation } from '../../../hooks/index.js'
-import mapValue from './map-value.js'
-import allowOverride from '../../../hoc/allow-override.js'
+import { ShowPropertyProps } from '../base-property-props'
+import { useTranslation } from '../../../hooks'
+import mapValue from './map-value'
+import allowOverride from '../../../hoc/allow-override'
 
 const BooleanPropertyValue: React.FC<ShowPropertyProps> = (props) => {
   const { record, property, resource } = props
 
-  const { tl } = useTranslation()
+  const { translateProperty } = useTranslation()
 
   const rawValue = record?.params[property.path]
 
@@ -17,7 +17,7 @@ const BooleanPropertyValue: React.FC<ShowPropertyProps> = (props) => {
     return null
   }
   const base = mapValue(rawValue)
-  const translation = tl(`${property.path}.${rawValue}`, resource.id, {
+  const translation = translateProperty(`${property.path}.${rawValue}`, resource.id, {
     defaultValue: base,
   })
 

@@ -1,6 +1,6 @@
-import { Action, RecordActionResponse } from '../action.interface.js'
-import NotFoundError from '../../utils/errors/not-found-error.js'
-import ValidationError from '../../utils/errors/validation-error.js'
+import { Action, RecordActionResponse } from '../action.interface'
+import NotFoundError from '../../utils/errors/not-found-error'
+import ValidationError from '../../utils/errors/validation-error'
 
 /**
  * @implements Action
@@ -15,7 +15,7 @@ export const DeleteAction: Action<RecordActionResponse> = {
   name: 'delete',
   isVisible: true,
   actionType: 'record',
-  icon: 'Trash2',
+  icon: 'TrashCan',
   guard: 'confirmDelete',
   component: false,
   variant: 'danger',
@@ -28,27 +28,19 @@ export const DeleteAction: Action<RecordActionResponse> = {
    * @implements ActionHandler
    * @memberof module:DeleteAction
    */
-  handler: async (request, _response, context) => {
-    const { record, resource, currentAdmin, h } = context
-
+  handler: async (request, response, context) => {
+    const { record, resource, currentAdmin, h, translateMessage } = context
     if (!request.params.recordId || !record) {
       throw new NotFoundError([
         'You have to pass "recordId" to Delete Action',
       ].join('\n'), 'Action#handler')
     }
-
-    if (request.method === 'get') {
-      return {
-        record: record.toJSON(context.currentAdmin),
-      }
-    }
-
     try {
       await resource.delete(request.params.recordId, context)
     } catch (error) {
       if (error instanceof ValidationError) {
         const baseMessage = error.baseError?.message
-          || 'thereWereValidationErrors'
+          || translateMessage('thereWereValidationErrors', resource.id())
         return {
           record: record.toJSON(currentAdmin),
           notice: {
@@ -59,12 +51,11 @@ export const DeleteAction: Action<RecordActionResponse> = {
       }
       throw error
     }
-
     return {
       record: record.toJSON(currentAdmin),
       redirectUrl: h.resourceUrl({ resourceId: resource._decorated?.id() || resource.id() }),
       notice: {
-        message: 'successfullyDeleted',
+        message: translateMessage('successfullyDeleted', resource.id()),
         type: 'success',
       },
     }

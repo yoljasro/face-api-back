@@ -1,9 +1,9 @@
 import { expect } from 'chai'
 import sinon, { SinonStubbedInstance } from 'sinon'
+import { BaseProperty, BaseRecord, BaseResource } from '../../adapters'
 
-import { BaseProperty, BaseRecord, BaseResource } from '../../adapters/index.js'
-import { PropertyDecorator, ResourceDecorator } from '../../decorators/index.js'
-import { populateProperty } from './populate-property.js'
+import { PropertyDecorator, ResourceDecorator } from '../../decorators'
+import { populateProperty } from './populate-property'
 
 describe('populateProperty', () => {
   const userId = '1234'

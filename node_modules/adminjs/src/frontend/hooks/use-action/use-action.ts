@@ -1,12 +1,10 @@
-import { useNavigate, useLocation } from 'react-router'
+import { useNavigate } from 'react-router'
 
-import { ActionResponse } from '../../../backend/actions/action.interface.js'
-import { ActionJSON, buildActionCallApiTrigger, buildActionClickHandler } from '../../interfaces/index.js'
-import { DifferentActionParams, ActionCallCallback, UseActionResult } from './use-action.types.js'
-import { actionHref } from '../../interfaces/action/action-href.js'
-import { useActionResponseHandler } from './use-action-response-handler.js'
-import { useTranslation } from '../use-translation.js'
-import { useModal } from '../use-modal.js'
+import { ActionResponse } from '../../../backend/actions/action.interface'
+import { ActionJSON, buildActionCallApiTrigger, buildActionClickHandler } from '../../interfaces'
+import { DifferentActionParams, ActionCallCallback, UseActionResult } from './use-action.types'
+import { actionHref } from '../../interfaces/action/action-href'
+import { useActionResponseHandler } from './use-action-response-handler'
 
 /**
  * @load ./use-action.doc.md
@@ -25,9 +23,7 @@ export function useAction<K extends ActionResponse>(
   onActionCall?: ActionCallCallback,
 ): UseActionResult<K> {
   const navigate = useNavigate()
-  const location = useLocation()
-  const translateFunctions = useTranslation()
-  const modalFunctions = useModal()
+
   const actionResponseHandler = useActionResponseHandler(onActionCall)
 
   const href = actionHref(action, params)
@@ -43,9 +39,6 @@ export function useAction<K extends ActionResponse>(
     params,
     actionResponseHandler,
     navigate,
-    translateFunctions,
-    modalFunctions,
-    location,
   })
 
   return {

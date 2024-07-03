@@ -1,11 +1,9 @@
 import React from 'react'
-import { FormGroup, Select } from '@adminjs/design-system'
+import { FormGroup, Label, Select } from '@adminjs/design-system'
 
-import mapValue from './map-value.js'
-import { FilterPropertyProps } from '../base-property-props.js'
-import allowOverride from '../../../hoc/allow-override.js'
-import PropertyLabel from '../utils/property-label/property-label.js'
-import { useTranslation } from '../../../hooks/index.js'
+import mapValue from './map-value'
+import { FilterPropertyProps } from '../base-property-props'
+import allowOverride from '../../../hoc/allow-override'
 
 const boolValue = (s: string): boolean => {
   if (/true/i.test(s)) {
@@ -16,11 +14,10 @@ const boolValue = (s: string): boolean => {
 
 const Filter: React.FC<FilterPropertyProps> = (props) => {
   const { property, filter = {}, onChange } = props
-  const { tl } = useTranslation()
   const value = typeof filter[property.path] === 'undefined' ? '' : boolValue(filter[property.path])
   const options = [
-    { value: true, label: tl(`${property.path}.true`, property.resourceId, { defaultValue: mapValue(true) }) },
-    { value: false, label: tl(`${property.path}.false`, property.resourceId, { defaultValue: mapValue(false) }) },
+    { value: true, label: mapValue(true) },
+    { value: false, label: mapValue(false) },
   ]
   const selected = options.find((o) => o.value === value)
   const handleChange = (s) => {
@@ -30,7 +27,7 @@ const Filter: React.FC<FilterPropertyProps> = (props) => {
 
   return (
     <FormGroup>
-      <PropertyLabel property={property} filter />
+      <Label>{property.label}</Label>
       <Select
         variant="filter"
         value={typeof selected === 'undefined' ? '' : selected}

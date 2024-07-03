@@ -1,8 +1,7 @@
 import { expect } from 'chai'
-
-import requestParser from './request-parser.js'
-import { ActionRequest } from '../../actions/action.interface.js'
-import BaseResource from '../../adapters/resource/base-resource.js'
+import requestParser from './request-parser'
+import { ActionRequest } from '../../actions/action.interface'
+import BaseResource from '../../adapters/resource/base-resource'
 
 const buildResourceWithProperty = (key, property) => {
   const resource = {

@@ -1,10 +1,9 @@
 import React from 'react'
 import { Box, MadeWithLove } from '@adminjs/design-system'
 import { useSelector } from 'react-redux'
-
-import { BrandingOptions } from '../../../../adminjs-options.interface.js'
-import allowOverride from '../../../hoc/allow-override.js'
-import { ReduxState } from '../../../store/index.js'
+import { BrandingOptions } from '../../../../adminjs-options.interface'
+import allowOverride from '../../../hoc/allow-override'
+import { ReduxState } from '../../../store'
 
 const SidebarFooter: React.FC = () => {
   const branding = useSelector<ReduxState, BrandingOptions>((state) => state.branding)
@@ -17,4 +16,3 @@ const SidebarFooter: React.FC = () => {
 }
 
 export default allowOverride(SidebarFooter, 'SidebarFooter')
-export { SidebarFooter as OriginalSidebarFooter, SidebarFooter }

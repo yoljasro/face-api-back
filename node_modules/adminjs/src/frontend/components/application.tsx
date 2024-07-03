@@ -1,26 +1,29 @@
 /* eslint-disable react/no-children-prop */
 import React, { useEffect, useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
-import { Box, Overlay } from '@adminjs/design-system'
+import { createGlobalStyle } from 'styled-components'
+import { Box, Overlay, Reset } from '@adminjs/design-system'
 import { useLocation } from 'react-router'
 
-import ViewHelpers from '../../backend/utils/view-helpers/view-helpers.js'
-import Sidebar, { SIDEBAR_Z_INDEX } from './app/sidebar/sidebar.js'
-import TopBar from './app/top-bar.js'
-import Notice from './app/notice.js'
-import allowOverride from '../hoc/allow-override.js'
-import { AdminModal as Modal } from './app/admin-modal.js'
+import ViewHelpers from '../../backend/utils/view-helpers/view-helpers'
+import Sidebar from './app/sidebar/sidebar'
+import TopBar from './app/top-bar'
+import Notice from './app/notice'
+import allowOverride from '../hoc/allow-override'
 import {
-  DashboardRoute,
-  ResourceActionRoute,
-  RecordActionRoute,
-  PageRoute,
-  BulkActionRoute,
-  ResourceRoute,
-} from './routes/index.js'
-import useHistoryListen from '../hooks/use-history-listen.js'
-import { AuthenticationBackgroundComponent } from './app/auth-background-component.js'
-import { Footer } from './app/footer.js'
+  DashboardRoute, ResourceActionRoute, RecordActionRoute, PageRoute, BulkActionRoute, ResourceRoute,
+} from './routes'
+import useHistoryListen from '../hooks/use-history-listen'
+
+const GlobalStyle = createGlobalStyle`
+  html, body, #app {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    color: ${({ theme }): string => theme.colors.grey100}
+  }
+`
 
 const h = new ViewHelpers()
 
@@ -31,9 +34,7 @@ const App: React.FC = () => {
   useHistoryListen()
 
   useEffect(() => {
-    if (sidebarVisible) {
-      toggleSidebar(false)
-    }
+    if (sidebarVisible) { toggleSidebar(false) }
   }, [location])
 
   const resourceId = ':resourceId'
@@ -41,60 +42,60 @@ const App: React.FC = () => {
   const recordId = ':recordId'
   const pageName = ':pageName'
 
-  // Note: replaces are required so that record/resource/bulk actions urls
-  // are relative to their parent route
   const dashboardUrl = h.dashboardUrl()
-  const resourceUrl = h.resourceUrl({ resourceId })
-  const recordActionUrl = h
-    .recordActionUrl({ resourceId, recordId, actionName })
-    .replace(resourceUrl, '').substring(1)
+  const recordActionUrl = h.recordActionUrl({ resourceId, recordId, actionName })
   const resourceActionUrl = h.resourceActionUrl({ resourceId, actionName })
-    .replace(resourceUrl, '').substring(1)
   const bulkActionUrl = h.bulkActionUrl({ resourceId, actionName })
-    .replace(resourceUrl, '').substring(1)
+  const resourceUrl = h.resourceUrl({ resourceId })
   const pageUrl = h.pageUrl(pageName)
 
+  /**
+   * When defining AdminJS routes, we use Routes component twice.
+   * This results in warnings appearing in console, for example about not being able to locate
+   * "/admin" route. They can be safely ignored though and should appear only
+   * in development environment. The warnings originate from the difference between
+   * "Switch" component that AdminJS had used in "react-router" v5 which was later replaced
+   * with "Routes" in "react-router" v6. "Switch" would use the first "Route" component
+   * that matched the provided path, while "Routes" searches for the best matching pattern.
+   * In AdminJS we use "DrawerPortal" to display actions in a drawer when
+   * "showInDrawer" option is set to true. The drawer should appear above the currently viewed
+   * page, but "Routes" broke this behavior because it instead showed a record action route with
+   * an empty background.
+   * The current flow is that first "Routes" component includes "Resource" route component
+   * for drawer-placed actions and the second "Routes" is entered for record actions
+   * on a separate page.
+   */
   return (
-    <Box height="100%" flex data-css="app">
-      {sidebarVisible ? (
-        <Overlay
-          onClick={(): void => toggleSidebar(!sidebarVisible)}
-          zIndex={SIDEBAR_Z_INDEX - 1}
-        />
-      ) : null}
-      <Sidebar isVisible={sidebarVisible} data-css="sidebar" />
-      <Box flex flexGrow={1} flexDirection="column" overflowY="auto" bg="bg" data-css="app-content">
-        <TopBar toggleSidebar={() => toggleSidebar(!sidebarVisible)} />
-        <Box position="absolute" top={0} zIndex={2000} data-css="notice">
-          <Notice />
+    <>
+      <Reset />
+      <GlobalStyle />
+      <Box height="100%" flex data-css="app">
+        {sidebarVisible ? (
+          <Overlay
+            onClick={(): void => toggleSidebar(!sidebarVisible)}
+          />
+        ) : null}
+        <Sidebar isVisible={sidebarVisible} data-css="sidebar" />
+        <Box flex flexGrow={1} flexDirection="column" overflowY="auto" bg="bg" data-css="app-content">
+          <TopBar toggleSidebar={() => toggleSidebar(!sidebarVisible)} />
+          <Box position="absolute" top={0} zIndex={2000} data-css="notice">
+            <Notice />
+          </Box>
+          <Routes>
+            <Route path={`${resourceUrl}/*`} element={<ResourceRoute />} />
+            <Route path={pageUrl} element={<PageRoute />} />
+            <Route path={dashboardUrl} element={<DashboardRoute />} />
+          </Routes>
+          <Routes>
+            <Route path={`${resourceActionUrl}/*`} element={<ResourceActionRoute />} />
+            <Route path={`${bulkActionUrl}/*`} element={<BulkActionRoute />} />
+            <Route path={`${recordActionUrl}/*`} element={<RecordActionRoute />} />
+          </Routes>
         </Box>
-        <Routes>
-          <Route path={dashboardUrl}>
-            <Route index element={<DashboardRoute />} />
-          </Route>
-          <Route path={resourceUrl}>
-            <Route index element={<ResourceRoute />} />
-            <Route path={bulkActionUrl} element={<BulkActionRoute />} />
-            <Route path={resourceActionUrl} element={<ResourceActionRoute />} />
-            <Route path={recordActionUrl} element={<RecordActionRoute />} />
-          </Route>
-          <Route path={pageUrl}>
-            <Route index element={<PageRoute />} />
-          </Route>
-          <Route path="*" element={<DashboardRoute />} />
-        </Routes>
-        <Footer />
       </Box>
-      <Modal />
-      <AuthenticationBackgroundComponent />
-    </Box>
+    </>
+
   )
 }
 
-const OverridableApp = allowOverride(App, 'Application')
-
-export {
-  OverridableApp as default,
-  OverridableApp as App,
-  App as OriginalApp,
-}
+export default allowOverride(App, 'Application')

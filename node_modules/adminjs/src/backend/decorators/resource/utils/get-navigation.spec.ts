@@ -1,7 +1,7 @@
 import { expect } from 'chai'
+import { ResourceOptions } from '..'
 
-import { ResourceOptions } from '../resource-options.interface.js'
-import { getNavigation, DatabaseData, getIcon } from './get-navigation.js'
+import { getNavigation, DatabaseData, getIcon } from './get-navigation'
 
 const databaseName = 'mysql-database'
 const databaseType = 'MySQL'

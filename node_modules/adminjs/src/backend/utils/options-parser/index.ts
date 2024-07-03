@@ -1,1 +1,1 @@
-export * from './options-parser.js'
+export * from './options-parser'

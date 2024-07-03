@@ -1,17 +1,17 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import styled from 'styled-components'
 import { cssClass, themeGet } from '@adminjs/design-system'
-import { styled } from '@adminjs/design-system/styled-components'
 
-import ViewHelpers from '../../../../backend/utils/view-helpers/view-helpers.js'
-import { BrandingOptions } from '../../../../adminjs-options.interface.js'
-import allowOverride from '../../../hoc/allow-override.js'
+import ViewHelpers from '../../../../backend/utils/view-helpers/view-helpers'
+import { BrandingOptions } from '../../../../adminjs-options.interface'
+import allowOverride from '../../../hoc/allow-override'
 
 type Props = {
   branding: BrandingOptions;
 }
 
-export const StyledLogo: any = styled(Link)`
+export const StyledLogo = styled(Link)`
   text-align: center;
   display: flex;
   align-content: center;
@@ -60,4 +60,3 @@ const SidebarBranding: React.FC<Props> = (props) => {
 }
 
 export default allowOverride(SidebarBranding, 'SidebarBranding')
-export { SidebarBranding as OriginalSidebarBranding, SidebarBranding }

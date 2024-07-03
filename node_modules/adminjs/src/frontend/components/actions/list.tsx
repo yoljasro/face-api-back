@@ -1,15 +1,14 @@
 import { Box, Pagination, Text } from '@adminjs/design-system'
 import React, { useEffect } from 'react'
-import { useLocation } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 
-import allowOverride from '../../hoc/allow-override.js'
-import { useQueryParams } from '../../hooks/use-query-params.js'
-import useRecords from '../../hooks/use-records/use-records.js'
-import useSelectedRecords from '../../hooks/use-selected-records/use-selected-records.js'
-import { getActionElementCss } from '../../utils/index.js'
-import RecordsTable from '../app/records-table/records-table.js'
-import { ActionProps } from './action.props.js'
-import { REFRESH_KEY } from './utils/append-force-refresh.js'
+import allowOverride from '../../hoc/allow-override'
+import useRecords from '../../hooks/use-records/use-records'
+import useSelectedRecords from '../../hooks/use-selected-records/use-selected-records'
+import { getActionElementCss } from '../../utils'
+import RecordsTable from '../app/records-table/records-table'
+import { ActionProps } from './action.props'
+import { REFRESH_KEY } from './utils/append-force-refresh'
 
 const List: React.FC<ActionProps> = ({ resource, setTag }) => {
   const {
@@ -29,7 +28,7 @@ const List: React.FC<ActionProps> = ({ resource, setTag }) => {
     setSelectedRecords,
   } = useSelectedRecords(records)
   const location = useLocation()
-  const { storeParams } = useQueryParams()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (setTag) {
@@ -45,24 +44,21 @@ const List: React.FC<ActionProps> = ({ resource, setTag }) => {
     const search = new URLSearchParams(location.search)
     if (search.get(REFRESH_KEY)) {
       setSelectedRecords([])
-    } else {
-      const recordIds = search.get('recordIds')?.split?.(',') ?? []
-      setSelectedRecords(
-        records.filter((r) => recordIds.includes(r.id.toString())),
-      )
     }
-  }, [location.search, records])
+  }, [location.search])
 
   const handleActionPerformed = (): any => fetchData()
 
   const handlePaginationChange = (pageNumber: number): void => {
-    storeParams({ page: pageNumber.toString() })
+    const search = new URLSearchParams(location.search)
+    search.set('page', pageNumber.toString())
+    navigate({ search: search.toString() })
   }
 
   const contentTag = getActionElementCss(resource.id, 'list', 'table-wrapper')
 
   return (
-    <Box variant="container" data-css={contentTag}>
+    <Box variant="white" data-css={contentTag}>
       <RecordsTable
         resource={resource}
         records={records}
@@ -91,5 +87,4 @@ const OverridableList = allowOverride(List, 'DefaultListAction')
 export {
   OverridableList as default,
   OverridableList as List,
-  List as OriginalList,
 }

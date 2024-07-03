@@ -1,9 +1,8 @@
 import { DEFAULT_DRAWER_WIDTH, VariantType } from '@adminjs/design-system'
-
-import ConfigurationError from '../../utils/errors/configuration-error.js'
-import ViewHelpers from '../../utils/view-helpers/view-helpers.js'
-import AdminJS from '../../../adminjs.js'
-import BaseResource from '../../adapters/resource/base-resource.js'
+import ConfigurationError from '../../utils/errors/configuration-error'
+import ViewHelpers from '../../utils/view-helpers/view-helpers'
+import AdminJS from '../../../adminjs'
+import BaseResource from '../../adapters/resource/base-resource'
 import {
   Action,
   IsFunction,
@@ -13,17 +12,17 @@ import {
   After,
   Before,
   ActionHandler,
-} from '../../actions/action.interface.js'
-import { CurrentAdmin } from '../../../current-admin.interface.js'
-import { ActionJSON } from '../../../frontend/interfaces/action/action-json.interface.js'
-import BaseRecord from '../../adapters/record/base-record.js'
-import actionErrorHandler from '../../services/action-error-handler/action-error-handler.js'
-import ForbiddenError from '../../utils/errors/forbidden-error.js'
+} from '../../actions/action.interface'
+import { CurrentAdmin } from '../../../current-admin.interface'
+import { ActionJSON } from '../../../frontend/interfaces/action/action-json.interface'
+import BaseRecord from '../../adapters/record/base-record'
+import actionErrorHandler from '../../services/action-error-handler/action-error-handler'
+import ForbiddenError from '../../utils/errors/forbidden-error'
 import {
   ParsedLayoutElement,
   LayoutElement,
   layoutElementParser,
-} from '../../utils/layout-element-parser/index.js'
+} from '../../utils/layout-element-parser'
 
 const DEFAULT_VARIANT: VariantType = 'default'
 
@@ -268,7 +267,7 @@ class ActionDecorator {
    * @throws  {ForbiddenError}          when user cannot perform given action
    */
   canInvokeAction(context: ActionContext): boolean {
-    const { record, records, currentAdmin } = context
+    const { record, records, currentAdmin, resource } = context
 
     if (record && this.isAccessible(currentAdmin, record)) {
       return true
@@ -282,7 +281,10 @@ class ActionDecorator {
       return true
     }
 
-    throw new ForbiddenError('forbiddenError')
+    throw new ForbiddenError(this._admin.translateMessage('forbiddenError', resource.id(), {
+      actionName: this.name,
+      resourceId: resource.id(),
+    }))
   }
 
   containerWidth(): ActionJSON['containerWidth'] {
@@ -342,9 +344,9 @@ class ActionDecorator {
       name: this.action.name,
       actionType: this.action.actionType,
       icon: this.action.icon,
-      label: this.action.name,
+      label: this._admin.translateAction(this.action.name, resourceId),
       resourceId,
-      guard: this.action.guard ? this.action.guard : '',
+      guard: this.action.guard ? this._admin.translateMessage(this.action.guard, resourceId) : '',
       showFilter: !!this.action.showFilter,
       showResourceActions: this.showResourceActions(),
       component: this.action.component,

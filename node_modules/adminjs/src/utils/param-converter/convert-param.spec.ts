@@ -1,6 +1,5 @@
 import { expect } from 'chai'
-
-import { convertParam } from './convert-param.js'
+import { convertParam } from './convert-param'
 
 describe('module:paramConverter.convertParam', () => {
   it('should convert numeric strings to Number', () => {

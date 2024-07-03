@@ -1,8 +1,8 @@
 import { expect } from 'chai'
+import { RecordJSON } from '../../../interfaces'
+import { removeSubProperty } from './remove-sub-property'
 
-import { RecordJSON } from '../../../interfaces/index.js'
-import { removeSubProperty } from './remove-sub-property.js'
-import factory from '../../spec/factory.js'
+import factory from '../../spec/factory'
 
 describe('removeSubProperty', () => {
   let record: RecordJSON

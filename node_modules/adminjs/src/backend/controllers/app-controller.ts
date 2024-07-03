@@ -1,12 +1,10 @@
 /* eslint-disable no-unused-vars */
-import ViewHelpers from '../utils/view-helpers/view-helpers.js'
-import componentsBundler from '../bundler/components.bundler.js'
-import layoutTemplate from '../../frontend/layout-template.js'
-import { ActionRequest } from '../actions/action.interface.js'
-import AdminJS from '../../adminjs.js'
-import { CurrentAdmin } from '../../current-admin.interface.js'
-import generateUserComponentEntry from '../bundler/generate-user-component-entry.js'
-import { ADMIN_JS_TMP_DIR } from '../bundler/utils/constants.js'
+import ViewHelpers from '../utils/view-helpers/view-helpers'
+import componentsBundler from '../bundler/user-components-bundler'
+import layoutTemplate from '../../frontend/layout-template'
+import { ActionRequest } from '../actions/action.interface'
+import AdminJS from '../../adminjs'
+import { CurrentAdmin } from '../../current-admin.interface'
 
 export default class AppController {
   private _admin: AdminJS
@@ -37,7 +35,7 @@ export default class AppController {
     if (!recordIds) {
       throw new Error('you have to give "recordIds" in the request parameters')
     }
-    const arrayOfIds = recordIds?.split?.(',')
+    const arrayOfIds = recordIds.split(',')
     const href = this.h.bulkActionUrl({ resourceId, actionName, recordIds: arrayOfIds })
     return layoutTemplate(this._admin, this.currentAdmin, href)
   }
@@ -66,16 +64,7 @@ export default class AppController {
     return layoutTemplate(this._admin, this.currentAdmin, href)
   }
 
-  async bundleComponents(): Promise<string | null> {
-    const output = await componentsBundler.getOutput()
-
-    if (output) return output
-
-    await componentsBundler.createEntry({
-      content: generateUserComponentEntry(this._admin, ADMIN_JS_TMP_DIR),
-    })
-    await componentsBundler.build()
-
-    return componentsBundler.getOutput()
+  async bundleComponents(): Promise<string> {
+    return componentsBundler(this._admin)
   }
 }

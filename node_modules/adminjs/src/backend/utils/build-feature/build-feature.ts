@@ -1,11 +1,10 @@
 /* eslint-disable no-nested-ternary */
-import uniq from 'lodash/uniq.js'
-import merge from 'lodash/merge.js'
-
-import AdminJS from '../../../adminjs.js'
-import { FeatureType } from '../../../adminjs-options.interface.js'
-import { ResourceOptions } from '../../decorators/resource/resource-options.interface.js'
-import { Action, ActionResponse } from '../../actions/action.interface.js'
+import uniq from 'lodash/uniq'
+import merge from 'lodash/merge'
+import AdminJS from '../../..'
+import { FeatureType } from '../../../adminjs-options.interface'
+import { ResourceOptions } from '../../decorators/resource/resource-options.interface'
+import { Action, ActionResponse } from '../../actions/action.interface'
 
 function mergeActionHooks<T>(
   key: string,
@@ -30,7 +29,7 @@ function mergeActionHooks<T>(
   return hooks.length ? { [key]: hooks } : {}
 }
 
-const basicOptions = ['id', 'href', 'parent', 'sort', 'navigation', 'titleProperty', 'translations'] as const
+const basicOptions = ['id', 'href', 'parent', 'sort', 'navigation'] as const
 const listOptions = [
   'listProperties', 'showProperties', 'editProperties', 'filterProperties',
 ] as const

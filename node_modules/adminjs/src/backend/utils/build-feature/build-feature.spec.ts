@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { expect } from 'chai'
-import { mergeResourceOptions } from './build-feature.js'
-import { Before, After, ActionResponse, ActionHandler } from '../../actions/action.interface.js'
+import { mergeResourceOptions } from '../build-feature'
+import { Before, After, ActionResponse, ActionHandler } from '../../actions/action.interface'
 
 describe('mergeResourceOptions', function () {
   it('chaines before hooks', function () {

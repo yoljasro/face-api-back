@@ -1,19 +1,13 @@
-import { AdminJSOptions, Assets } from '../../../adminjs-options.interface.js'
-import type { PathsInState } from '../../../index.js'
-
-type Paths = PathsInState
+import { AdminJSOptions, Assets } from '../../../adminjs-options.interface'
+import { Paths } from '../../../frontend/store/store'
 
 let globalAny: any = {}
 
 try {
   globalAny = window
 } catch (error) {
-  if (!(error instanceof ReferenceError)) {
+  if (error.message !== 'window is not defined') {
     throw error
-  }
-} finally {
-  if (!globalAny) {
-    globalAny = {}
   }
 }
 
@@ -26,15 +20,15 @@ export type ActionParams = {
   /**
    * Unique Resource ID
    */
-  resourceId: string
+  resourceId: string;
   /**
    * Action name
    */
-  actionName: string
+  actionName: string;
   /**
    * Optional query string: ?....
    */
-  search?: string
+  search? : string;
 }
 
 /**
@@ -47,7 +41,7 @@ export type RecordActionParams = ActionParams & {
   /**
    * Record ID
    */
-  recordId: string
+  recordId: string;
 }
 
 /**
@@ -60,7 +54,7 @@ export type BulkActionParams = ActionParams & {
   /**
    * Array of Records ID
    */
-  recordIds?: Array<string>
+  recordIds?: Array<string>;
 }
 
 /**
@@ -91,7 +85,7 @@ export class ViewHelpers {
   }
 
   static getPaths(options?: AdminJSOptions): Paths {
-    return options || globalAny.REDUX_STATE?.paths
+    return options || (globalAny.REDUX_STATE?.paths)
   }
 
   /**
@@ -107,9 +101,7 @@ export class ViewHelpers {
     const replace = new RegExp(`${separator}{1,}`, 'g')
 
     let { rootPath } = this.options
-    if (!rootPath.startsWith(separator)) {
-      rootPath = `${separator}${rootPath}`
-    }
+    if (!rootPath.startsWith(separator)) { rootPath = `${separator}${rootPath}` }
 
     const parts = [rootPath, ...paths]
     return `${parts.join(separator).replace(replace, separator)}${search}`
@@ -256,7 +248,9 @@ export class ViewHelpers {
    * @return  {string}
    */
   bulkActionUrl({ resourceId, recordIds, actionName, search }: BulkActionParams): string {
-    const url = this.urlBuilder(['resources', resourceId, 'bulk', actionName])
+    const url = this.urlBuilder([
+      'resources', resourceId, 'bulk', actionName,
+    ])
     if (recordIds && recordIds.length) {
       const query = new URLSearchParams(search)
       query.set('recordIds', recordIds.join(','))

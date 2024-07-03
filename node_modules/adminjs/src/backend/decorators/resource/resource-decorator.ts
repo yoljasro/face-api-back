@@ -1,11 +1,13 @@
-import { DecoratedActions } from './utils/decorate-actions.js'
-import { BaseResource, BaseRecord } from '../../adapters/index.js'
-import { PropertyDecorator, ActionDecorator } from '../index.js'
-import ViewHelpers from '../../utils/view-helpers/view-helpers.js'
-import AdminJS from '../../../adminjs.js'
-import { ResourceOptions } from './resource-options.interface.js'
-import { CurrentAdmin } from '../../../current-admin.interface.js'
-import { ResourceJSON, PropertyPlace } from '../../../frontend/interfaces/index.js'
+import { DecoratedActions } from './utils/decorate-actions'
+
+import { BaseResource, BaseRecord } from '../../adapters'
+import { PropertyDecorator, ActionDecorator } from '..'
+import ViewHelpers from '../../utils/view-helpers/view-helpers'
+import AdminJS from '../../../adminjs'
+
+import { ResourceOptions } from './resource-options.interface'
+import { CurrentAdmin } from '../../../current-admin.interface'
+import { ResourceJSON, PropertyPlace } from '../../../frontend/interfaces'
 import {
   decorateActions,
   decorateProperties,
@@ -13,7 +15,7 @@ import {
   flatSubProperties,
   DecoratedProperties,
   getPropertyByKey,
-} from './utils/index.js'
+} from './utils'
 
 /**
  * Default maximum number of items which should be present in a list.
@@ -100,7 +102,7 @@ class ResourceDecorator {
    * @return {string} resource name
    */
   getResourceName(): string {
-    return this.id()
+    return this._admin.translateLabel(this.id(), this.id())
   }
 
   /**
@@ -246,15 +248,8 @@ class ResourceDecorator {
    * @return  {PropertyDecorator} PropertyDecorator of title property
    */
   titleProperty(): PropertyDecorator {
-    let titleProperty
-
     const properties = Object.values(this.properties)
-    if (this.options.titleProperty) {
-      titleProperty = this.getPropertyByKey(this.options.titleProperty)
-    } else {
-      titleProperty = properties.find((p) => p.isTitle())
-    }
-
+    const titleProperty = properties.find((p) => p.isTitle())
     return titleProperty || properties[0]
   }
 

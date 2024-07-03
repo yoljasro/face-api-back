@@ -1,11 +1,10 @@
 import React from 'react'
 import * as DesignSystem from '@adminjs/design-system'
-
-import { ActionProps } from '../action.props.js'
-import BasePropertyComponent from '../../property-type/index.js'
-import { PropertyPlace } from '../../../interfaces/property-json/property-json.interface.js'
-import { ParsedLayoutElement } from '../../../../backend/utils/layout-element-parser/index.js'
-import { BasePropertyProps } from '../../property-type/base-property-props.js'
+import { ActionProps } from '../action.props'
+import PropertyType from '../../property-type'
+import { PropertyPlace } from '../../../interfaces/property-json/property-json.interface'
+import { ParsedLayoutElement } from '../../../../backend/utils/layout-element-parser'
+import { BasePropertyProps } from '../../property-type/base-property-props'
 
 type Props = ActionProps & {
   layoutElement: ParsedLayoutElement;
@@ -49,7 +48,7 @@ export const LayoutElementRenderer: React.FC<Props> = (props) => {
     <Component {...other as any}>
       {properties.map((property) => (
         <DesignSystem.Box flexGrow={1} key={property.propertyPath}>
-          <BasePropertyComponent
+          <PropertyType
             key={property.propertyPath}
             where={where}
             property={property}

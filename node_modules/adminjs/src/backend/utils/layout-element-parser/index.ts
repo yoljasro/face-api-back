@@ -1,1 +1,1 @@
-export * from './layout-element-parser.js'
+export * from './layout-element-parser'

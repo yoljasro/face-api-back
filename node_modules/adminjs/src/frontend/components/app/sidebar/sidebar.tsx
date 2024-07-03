@@ -1,37 +1,32 @@
-import { Box, BoxProps, cssClass } from '@adminjs/design-system'
-import { styled } from '@adminjs/design-system/styled-components'
 import React from 'react'
+import styled from 'styled-components'
 import { useSelector } from 'react-redux'
+import { Box, cssClass, themeGet } from '@adminjs/design-system'
 
-import allowOverride from '../../../hoc/allow-override.js'
-import { ReduxState } from '../../../store/store.js'
-import SidebarBranding from './sidebar-branding.js'
-import SidebarFooter from './sidebar-footer.js'
-import SidebarPages from './sidebar-pages.js'
-import SidebarResourceSection from './sidebar-resource-section.js'
+import { BrandingOptions } from '../../../../adminjs-options.interface'
+import { ResourceJSON, PageJSON } from '../../../interfaces'
 
-export const SIDEBAR_Z_INDEX = 50
+import SidebarBranding from './sidebar-branding'
+import SidebarPages from './sidebar-pages'
+import { ReduxState } from '../../../store/store'
+import SidebarFooter from './sidebar-footer'
+
+import SidebarResourceSection from './sidebar-resource-section'
+import allowOverride from '../../../hoc/allow-override'
 
 type Props = {
-  isVisible: boolean
-}
+  isVisible: boolean;
+};
 
-const StyledSidebar = styled(Box)<BoxProps>`
+const StyledSidebar = styled(Box)`
+  transition: left 0.3s;
   top: 0;
   bottom: 0;
-  overflow-y: auto;
-  width: ${({ theme }) => theme.sizes.sidebarWidth};
-  border-right: ${({ theme }) => theme.borders.default};
-  display: flex;
-  flex-direction: column;
   flex-shrink: 0;
-  z-index: ${SIDEBAR_Z_INDEX};
-  background: ${({ theme }) => theme.colors.sidebar};
-
-  transition: left 0.25s ease-in-out;
+  overflow-y: auto;
 
   &.hidden {
-    left: -${({ theme }) => theme.sizes.sidebarWidth};
+    left: -${themeGet('sizes', 'sidebarWidth')};
   }
   &.visible {
     left: 0;
@@ -39,14 +34,26 @@ const StyledSidebar = styled(Box)<BoxProps>`
 `
 
 StyledSidebar.defaultProps = {
-  position: ['absolute', 'absolute', 'absolute', 'absolute', 'initial'],
+  position: ['absolute', 'absolute', 'absolute', 'absolute', 'inherit'],
+  width: 'sidebarWidth',
+  borderRight: 'default',
+  display: 'flex',
+  flexDirection: 'column',
+  zIndex: 50,
+  bg: 'white',
 }
 
 const SidebarOriginal: React.FC<Props> = (props) => {
   const { isVisible } = props
-  const branding = useSelector((state: ReduxState) => state.branding)
-  const resources = useSelector((state: ReduxState) => state.resources)
-  const pages = useSelector((state: ReduxState) => state.pages)
+  const [branding, resources, pages]: [
+    BrandingOptions,
+    ResourceJSON[],
+    PageJSON[]
+  ] = useSelector((state: ReduxState) => [
+    state.branding,
+    state.resources,
+    state.pages,
+  ])
 
   return (
     <StyledSidebar className={isVisible ? 'visible' : 'hidden'} data-css="sidebar">
@@ -62,5 +69,5 @@ const SidebarOriginal: React.FC<Props> = (props) => {
 
 const Sidebar = allowOverride(SidebarOriginal, 'Sidebar')
 
-export { Sidebar, SidebarOriginal as OriginalSidebar }
+export { Sidebar }
 export default Sidebar

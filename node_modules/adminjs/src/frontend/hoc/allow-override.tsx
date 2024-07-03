@@ -1,13 +1,13 @@
 /* eslint-disable react/function-component-definition */
 import React, { ComponentType } from 'react'
-
-import { OverridableComponent } from '../utils/overridable-component.js'
+import { OverridableComponent } from '../utils/overridable-component'
 
 /**
  * @private
  *
  * @classdesc
- * Overrides one of the AdminJS core components when user passes it's name to ComponentLoader
+ * Overrides one of the component form AdminJS core when user pass its name to
+ * {@link ComponentLoader.add} or {@link ComponentLoader.override} method.
  *
  * If case of being overridden, component receives additional prop: `OriginalComponent`
  *
@@ -28,8 +28,8 @@ function allowOverride<P extends Record<string, unknown>>(
      *
      */
     if (typeof window !== 'undefined') {
-      Component = (window as any).AdminJS?.UserComponents?.[name]
-        ?? (window as any).THEME_COMPONENTS?.[name]
+      Component = window.AdminJS?.UserComponents?.[name]
+        ?? (window as any).THEME?.Components?.[name]
         ?? OriginalComponent
     }
 

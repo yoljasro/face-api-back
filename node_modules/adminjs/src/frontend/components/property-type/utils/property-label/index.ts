@@ -1,1 +1,1 @@
-export * from './property-label.js'
+export * from './property-label'

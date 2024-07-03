@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 
-import { appendForceRefresh } from './append-force-refresh.js'
+import { appendForceRefresh } from './append-force-refresh'
 
 describe('appendForceRefresh', () => {
   it('should add ?refresh=true to url if url has no search params', () => {

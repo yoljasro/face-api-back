@@ -1,5 +1,5 @@
-import { ErrorTypeEnum } from '../../../utils/error-type.enum.js'
-import RecordError from './record-error.js'
+import { ErrorTypeEnum } from '../../../utils/error-type.enum'
+import RecordError from './record-error'
 
 /**
  * Error which is thrown when user

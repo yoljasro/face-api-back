@@ -1,7 +1,7 @@
-import { Action, RecordActionResponse } from '../action.interface.js'
-import NotFoundError from '../../utils/errors/not-found-error.js'
-import populator from '../../utils/populator/populator.js'
-import { paramConverter } from '../../../utils/param-converter/index.js'
+import { Action, RecordActionResponse } from '../action.interface'
+import NotFoundError from '../../utils/errors/not-found-error'
+import populator from '../../utils/populator/populator'
+import { paramConverter } from '../../../utils/param-converter'
 
 /**
  * @implements Action
@@ -30,7 +30,7 @@ export const EditAction: Action<RecordActionResponse> = {
    * @memberof module:EditAction
    */
   handler: async (request, response, context) => {
-    const { record, resource, currentAdmin, h } = context
+    const { record, resource, currentAdmin, h, translateMessage } = context
     if (!record) {
       throw new NotFoundError([
         `Record of given id ("${request.params.recordId}") could not be found`,
@@ -51,14 +51,14 @@ export const EditAction: Action<RecordActionResponse> = {
       return {
         redirectUrl: h.resourceUrl({ resourceId: resource._decorated?.id() || resource.id() }),
         notice: {
-          message: 'successfullyUpdated',
+          message: translateMessage('successfullyUpdated', resource.id()),
           type: 'success',
         },
         record: populatedRecord.toJSON(currentAdmin),
       }
     }
     const baseMessage = populatedRecord.baseError?.message
-      || 'thereWereValidationErrors'
+      || translateMessage('thereWereValidationErrors', resource.id())
     return {
       record: populatedRecord.toJSON(currentAdmin),
       notice: {

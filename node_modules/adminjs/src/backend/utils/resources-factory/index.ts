@@ -1,1 +1,1 @@
-export { default as ResourcesFactory } from './resources-factory.js'
+export { default as ResourcesFactory } from './resources-factory'

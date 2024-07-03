@@ -1,5 +1,5 @@
-import { ActionJSON, RecordJSON, ResourceJSON } from '../../../interfaces/index.js'
-import { ActionResponse } from '../../../../backend/actions/action.interface.js'
+import { ActionJSON, RecordJSON, ResourceJSON } from '../../../interfaces'
+import { ActionResponse } from '../../../../backend/actions/action.interface'
 
 /**
  * @memberof ActionHeader
@@ -11,7 +11,7 @@ export type ActionHeaderProps = {
   /** Optional record - for _record_ actions */
   record?: RecordJSON;
   /** If given, action header will render Filter button */
-  toggleFilter?: (() => any) | boolean;
+  toggleFilter?: () => any;
   /**
    * It indicates if action without a component was performed.
    */

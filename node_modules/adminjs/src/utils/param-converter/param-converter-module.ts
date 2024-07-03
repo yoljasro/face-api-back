@@ -1,7 +1,7 @@
-import { DELIMITER } from './constants.js'
-import { convertNestedParam } from './convert-nested-param.js'
-import { convertParam } from './convert-param.js'
-import { prepareParams } from './prepare-params.js'
+import { DELIMITER } from './constants'
+import { convertNestedParam } from './convert-nested-param'
+import { convertParam } from './convert-param'
+import { prepareParams } from './prepare-params'
 
 export type ParamConverterModuleType = {
   convertParam: typeof convertParam;

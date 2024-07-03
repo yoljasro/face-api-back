@@ -1,8 +1,8 @@
 import React from 'react'
 
-import formatValue from './format-value.js'
-import allowOverride from '../../../hoc/allow-override.js'
-import { ShowPropertyProps } from '../base-property-props.js'
+import formatValue from './format-value'
+import allowOverride from '../../../hoc/allow-override'
+import { ShowPropertyProps } from '../base-property-props'
 
 const List: React.FC<ShowPropertyProps> = (props) => {
   const { property, record } = props

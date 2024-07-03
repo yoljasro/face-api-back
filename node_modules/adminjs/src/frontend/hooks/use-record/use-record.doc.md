@@ -53,7 +53,7 @@ const MyRecordActionComponent = (props) => {
         resource={resource}
         record={record}
       />
-      <Button variant="contained" size="lg">
+      <Button variant="primary" size="lg">
         {translateButton('save', resource.id)}
       </Button>
     </Box>

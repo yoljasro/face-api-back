@@ -1,7 +1,7 @@
-import { BasePropertyJSON } from '../../frontend/interfaces/property-json/property-json.interface.js'
+import { BasePropertyJSON } from '../../frontend/interfaces/property-json/property-json.interface'
 
-import { DELIMITER } from './constants.js'
-import { convertParam } from './convert-param.js'
+import { DELIMITER } from './constants'
+import { convertParam } from './convert-param'
 
 const convertNestedParam = (
   parentValue: Record<string, any>,

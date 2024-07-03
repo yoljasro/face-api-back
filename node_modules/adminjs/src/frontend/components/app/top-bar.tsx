@@ -1,22 +1,22 @@
-import { Box, BoxProps, Icon, cssClass } from '@adminjs/design-system'
-import { styled } from '@adminjs/design-system/styled-components'
 import React from 'react'
 import { useSelector } from 'react-redux'
+import styled from 'styled-components'
+import { cssClass, Box, Icon, themeGet } from '@adminjs/design-system'
 
-import allowOverride from '../../hoc/allow-override.js'
-import { ReduxState } from '../../store/store.js'
-import LanguageSelect from './language-select/language-select.js'
-import LoggedIn from './logged-in.js'
-import Version from './version.js'
+import allowOverride from '../../hoc/allow-override'
+import LoggedIn from './logged-in'
+import Version from './version'
+import { ReduxState, Paths } from '../../store/store'
+import { CurrentAdmin } from '../../../current-admin.interface'
+import { VersionProps } from '../../../adminjs-options.interface'
 
-const NavBar = styled(Box)<BoxProps>`
-  height: ${({ theme }) => theme.sizes.navbarHeight};
-  border-bottom: ${({ theme }) => theme.borders.default};
-  background: ${({ theme }) => theme.colors.container};
+const NavBar = styled(Box)`
+  height: ${({ theme }): string => theme.sizes.navbarHeight};
+  border-bottom: ${themeGet('borders', 'default')};
+  background: ${({ theme }): string => theme.colors.white};
   display: flex;
   flex-direction: row;
   flex-shrink: 0;
-  align-items: center;
 `
 
 NavBar.defaultProps = {
@@ -29,9 +29,13 @@ type Props = {
 
 const TopBar: React.FC<Props> = (props) => {
   const { toggleSidebar } = props
-  const session = useSelector((state: ReduxState) => state.session)
-  const paths = useSelector((state: ReduxState) => state.paths)
-  const versions = useSelector((state: ReduxState) => state.versions)
+  const [session, paths, versions] = useSelector(
+    (state: ReduxState): [CurrentAdmin | null, Paths, VersionProps] => [
+      state.session,
+      state.paths,
+      state.versions,
+    ],
+  )
 
   return (
     <NavBar data-css="topbar">
@@ -42,10 +46,9 @@ const TopBar: React.FC<Props> = (props) => {
         display={['block', 'block', 'block', 'block', 'none']}
         style={{ cursor: 'pointer' }}
       >
-        <Icon icon="Menu" size={24} />
+        <Icon icon="Menu" size={32} color="grey100" />
       </Box>
       <Version versions={versions} />
-      <LanguageSelect />
       {session && session.email ? <LoggedIn session={session} paths={paths} /> : ''}
     </NavBar>
   )
@@ -53,4 +56,4 @@ const TopBar: React.FC<Props> = (props) => {
 
 const OverridableTopbar = allowOverride<Props>(TopBar, 'TopBar')
 
-export { OverridableTopbar as TopBar, OverridableTopbar as default, TopBar as OriginalTopBar }
+export { OverridableTopbar as default, OverridableTopbar as TopBar }

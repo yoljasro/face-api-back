@@ -1,9 +1,10 @@
 /**
  * @module cy
  * @load ./cypress.doc.md
+ * @new in version 3.3
  */
 
-import './commands/ab-login.js'
-import './commands/ab-login-api.js'
-import './commands/ab-keep-logged-in.js'
-import './commands/ab-get-property.js'
+require('./commands/ab-login')
+require('./commands/ab-login-api')
+require('./commands/ab-keep-logged-in')
+require('./commands/ab-get-property')

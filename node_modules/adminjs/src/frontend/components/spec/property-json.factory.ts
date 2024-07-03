@@ -1,6 +1,5 @@
-import { factory } from 'factory-girl'
-
-import { PropertyJSON } from '../../interfaces/index.js'
+import factory from 'factory-girl'
+import { PropertyJSON } from '../../interfaces'
 
 factory.define<PropertyJSON>('PropertyJSON', Object, {
   custom: {},
@@ -8,7 +7,7 @@ factory.define<PropertyJSON>('PropertyJSON', Object, {
   isId: false,
   isSortable: true,
   availableValues: null,
-  label: factory.sequence('JSONProperty.label', (n) => `someProperty${n}`),
+  label: factory.sequence('JSONProperty.label', (n) => `some property ${n}`),
   name: factory.sequence('JSONProperty.name', (n) => `someProperty${n}`),
   position: factory.sequence('JSONProperty.position', (n) => n),
   type: 'string',

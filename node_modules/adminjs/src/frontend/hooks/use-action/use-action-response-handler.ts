@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { useNavigate, useLocation } from 'react-router'
-
-import { ActionResponse } from '../../../backend/actions/action.interface.js'
-import { appendForceRefresh } from '../../components/actions/utils/append-force-refresh.js'
-import { ActionCallCallback } from './index.js'
-import { useNotice } from '../use-notice.js'
+import { ActionResponse } from '../../../backend/actions/action.interface'
+import { appendForceRefresh } from '../../components/actions/utils/append-force-refresh'
+import { ActionCallCallback } from '.'
+import { useNotice } from '../use-notice'
 
 export const useActionResponseHandler = (onActionCall?: ActionCallCallback) => {
   const location = useLocation()

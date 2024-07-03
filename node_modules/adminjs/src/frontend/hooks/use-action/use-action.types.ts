@@ -1,18 +1,16 @@
 import React from 'react'
 import { AxiosResponse } from 'axios'
-
 import {
   BulkActionParams,
   ResourceActionParams,
   RecordActionParams, ActionParams,
-} from '../../../backend/utils/view-helpers/view-helpers.js'
-import { ActionResponse } from '../../../backend/actions/action.interface.js'
+} from '../../../backend/utils/view-helpers/view-helpers'
+import { ActionResponse } from '../../../backend/actions/action.interface'
 
 export type DifferentActionParams = {
   resourceId: ActionParams['resourceId'];
   recordId?: RecordActionParams['recordId'];
   recordIds?: BulkActionParams['recordIds'];
-  search?: string;
 }
 
 export type MergedActionParams = RecordActionParams & BulkActionParams & ResourceActionParams;

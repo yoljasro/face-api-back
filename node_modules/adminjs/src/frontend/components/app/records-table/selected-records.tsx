@@ -1,13 +1,13 @@
 import React from 'react'
 import { TableCaption, Title, ButtonGroup, Box } from '@adminjs/design-system'
-import { useNavigate, useLocation } from 'react-router'
 
-import { ActionJSON, buildActionClickHandler, RecordJSON, ResourceJSON } from '../../../interfaces/index.js'
-import getBulkActionsFromRecords from './utils/get-bulk-actions-from-records.js'
-import { useActionResponseHandler, useTranslation, useModal } from '../../../hooks/index.js'
-import { actionsToButtonGroup } from '../action-header/actions-to-button-group.js'
-import allowOverride from '../../../hoc/allow-override.js'
-import { getResourceElementCss } from '../../../utils/index.js'
+import { useNavigate } from 'react-router'
+import { ActionJSON, buildActionClickHandler, RecordJSON, ResourceJSON } from '../../../interfaces'
+import getBulkActionsFromRecords from './utils/get-bulk-actions-from-records'
+import { useActionResponseHandler, useTranslation } from '../../../hooks'
+import { actionsToButtonGroup } from '../action-header/actions-to-button-group'
+import allowOverride from '../../../hoc/allow-override'
+import { getResourceElementCss } from '../../../utils'
 
 type SelectedRecordsProps = {
   resource: ResourceJSON;
@@ -16,12 +16,9 @@ type SelectedRecordsProps = {
 
 const SelectedRecords: React.FC<SelectedRecordsProps> = (props) => {
   const { resource, selectedRecords } = props
-  const translateFunctions = useTranslation()
-  const { translateLabel } = translateFunctions
+  const { translateLabel } = useTranslation()
   const navigate = useNavigate()
-  const location = useLocation()
   const actionResponseHandler = useActionResponseHandler()
-  const modalFunctions = useModal()
 
   if (!selectedRecords || !selectedRecords.length) {
     return null
@@ -38,9 +35,6 @@ const SelectedRecords: React.FC<SelectedRecordsProps> = (props) => {
       params,
       actionResponseHandler,
       navigate,
-      location,
-      translateFunctions,
-      modalFunctions,
     })(event)
   )
 
@@ -48,12 +42,8 @@ const SelectedRecords: React.FC<SelectedRecordsProps> = (props) => {
     actions: getBulkActionsFromRecords(selectedRecords),
     params,
     handleClick: handleActionClick,
-    translateFunctions,
-    modalFunctions,
   })
-
   const contentTag = getResourceElementCss(resource.id, 'table-caption')
-
   return (
     <TableCaption data-css={contentTag}>
       <Box flex py="sm" alignItems="center">
@@ -71,5 +61,4 @@ const OverridableSelectedRecords = allowOverride(SelectedRecords, 'SelectedRecor
 export {
   OverridableSelectedRecords as default,
   OverridableSelectedRecords as SelectedRecords,
-  SelectedRecords as OriginalSelectedRecords,
 }

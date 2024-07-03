@@ -1,14 +1,13 @@
-import { render } from '@testing-library/react'
-import { expect } from 'chai'
-import { factory } from 'factory-girl'
 import React from 'react'
+import { render } from '@testing-library/react'
+import factory from 'factory-girl'
+import { expect } from 'chai'
 
-import TestContextProvider from '../../spec/test-context-provider.js'
-import RecordsTableHeader from './records-table-header.js'
-import { PropertyJSON } from '../../../interfaces/index.js'
+import TestContextProvider from '../../spec/test-context-provider'
+import RecordsTableHeader from './records-table-header'
+import { PropertyJSON } from '../../../interfaces'
 
-import '../../spec/initialize-translations.js'
-import '../../spec/property-json.factory.js'
+require('../../spec/property-json.factory')
 
 describe('<RecordsTableHeader />', function () {
   it('renders columns for selected properties and actions', async function () {

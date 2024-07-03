@@ -1,2 +1,2 @@
-export * from './flat-module.js'
-export * from './flat.types.js'
+export * from './flat-module'
+export * from './flat.types'

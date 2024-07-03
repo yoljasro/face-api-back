@@ -1,6 +1,5 @@
 import { expect } from 'chai'
-
-import { selectParams } from './select-params.js'
+import { selectParams } from './select-params'
 
 describe('selectParams', () => {
   const params = {

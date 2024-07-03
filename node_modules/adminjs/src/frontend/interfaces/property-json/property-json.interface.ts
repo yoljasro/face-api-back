@@ -1,4 +1,4 @@
-import { PropertyType } from '../../../backend/adapters/property/base-property.js'
+import { PropertyType } from '../../../backend/adapters/property/base-property'
 
 export type PropertyPlace = 'show' | 'list' | 'edit' | 'filter';
 
@@ -26,7 +26,7 @@ export interface PropertyJSON {
   /**
    * If property has restricted number of values
    */
-  availableValues: Array<{label?: string; value: string | number}> | null;
+  availableValues: Array<{label: string; value: string | number}> | null;
   /**
    * Property uniq name
    */

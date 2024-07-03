@@ -1,5 +1,5 @@
-import { Action, BulkActionResponse } from '../action.interface.js'
-import NotFoundError from '../../utils/errors/not-found-error.js'
+import { Action, BulkActionResponse } from '../action.interface'
+import NotFoundError from '../../utils/errors/not-found-error'
 
 /**
  * @implements Action
@@ -13,7 +13,7 @@ export const BulkDeleteAction: Action<BulkActionResponse> = {
   name: 'bulkDelete',
   isVisible: true,
   actionType: 'bulk',
-  icon: 'Trash2',
+  icon: 'Delete',
   showInDrawer: true,
   variant: 'danger',
   /**
@@ -27,7 +27,7 @@ export const BulkDeleteAction: Action<BulkActionResponse> = {
    * @memberof module:BulkDeleteAction
    */
   handler: async (request, response, context) => {
-    const { records, resource, h } = context
+    const { records, resource, h, translateMessage } = context
 
     if (!records || !records.length) {
       throw new NotFoundError('no records were selected.', 'Action#handler')
@@ -43,9 +43,9 @@ export const BulkDeleteAction: Action<BulkActionResponse> = {
       return {
         records: records.map((record) => record.toJSON(context.currentAdmin)),
         notice: {
-          message: records.length > 1 ? 'successfullyBulkDeleted_plural' : 'successfullyBulkDeleted',
-          options: { count: records.length },
-          resourceId: resource.id(),
+          message: translateMessage(records.length > 1 ? 'successfullyBulkDeleted_plural' : 'successfullyBulkDeleted', resource.id(), {
+            count: records.length,
+          }),
           type: 'success',
         },
         redirectUrl: h.resourceUrl({ resourceId: resource._decorated?.id() || resource.id() }),

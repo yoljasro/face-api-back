@@ -1,9 +1,5 @@
-import { ActionJSON } from './action-json.interface.js'
+import { ActionJSON } from './action-json.interface'
 
-export const actionHasDisabledComponent = (action: ActionJSON): boolean => (
+export const actionHasComponent = (action: ActionJSON): boolean => (
   typeof action.component !== 'undefined' && action.component === false
-)
-
-export const actionHasCustomComponent = (action: ActionJSON): boolean => (
-  typeof action.component === 'string'
 )

@@ -1,10 +1,11 @@
 import { expect } from 'chai'
-import { factory } from 'factory-girl'
+import factory from 'factory-girl'
 
-import '../../../spec/record-json.factory.js'
-import '../../../spec/action-json.factory.js'
-import { RecordJSON, ActionJSON } from '../../../../interfaces/index.js'
-import getBulkActionsFromRecords from './get-bulk-actions-from-records.js'
+import '../../../spec/record-json.factory'
+import '../../../spec/action-json.factory'
+import { RecordJSON, ActionJSON } from '../../../../interfaces'
+
+import getBulkActionsFromRecords from './get-bulk-actions-from-records'
 
 describe('getBulkActionsFromRecords', function () {
   context('records with 2 bulk actions', function () {

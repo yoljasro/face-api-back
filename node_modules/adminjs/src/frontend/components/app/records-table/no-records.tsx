@@ -1,10 +1,10 @@
 import React from 'react'
 import { Text, Button, Icon, InfoBox } from '@adminjs/design-system'
 
-import { ResourceJSON } from '../../../interfaces/index.js'
-import { useTranslation } from '../../../hooks/index.js'
-import allowOverride from '../../../hoc/allow-override.js'
-import ActionButton from '../action-button/action-button.js'
+import { ResourceJSON } from '../../../interfaces'
+import { useTranslation } from '../../../hooks'
+import allowOverride from '../../../hoc/allow-override'
+import ActionButton from '../action-button/action-button'
 
 export type NoRecordsProps = {
   resource: ResourceJSON;
@@ -17,18 +17,18 @@ const NoRecordsOriginal: React.FC<NoRecordsProps> = (props) => {
   const canCreate = resource.resourceActions.find((a) => a.name === 'new')
 
   return (
-    <InfoBox title={translateMessage('noRecords', resource.id)} illustration="Docs">
+    <InfoBox title={translateMessage('noRecords', resource.id)}>
       <Text mb="xxl">
         {translateMessage('noRecordsInResource', resource.id)}
       </Text>
-      {canCreate && (
+      {canCreate ? (
         <ActionButton action={canCreate} resourceId={resource.id}>
-          <Button variant="contained">
-            <Icon icon="Plus" />
+          <Button variant="primary">
+            <Icon icon="Add" />
             {translateButton('createFirstRecord', resource.id)}
           </Button>
         </ActionButton>
-      )}
+      ) : ''}
     </InfoBox>
   )
 }
@@ -36,5 +36,5 @@ const NoRecordsOriginal: React.FC<NoRecordsProps> = (props) => {
 // This hack prevents rollup from throwing an error
 const NoRecords = allowOverride(NoRecordsOriginal, 'NoRecords')
 
-export { NoRecords, NoRecordsOriginal as OriginalNoRecords }
+export { NoRecords }
 export default NoRecords

@@ -1,10 +1,9 @@
 /* eslint-disable arrow-parens */
 import { AxiosResponse } from 'axios'
-
-import { ActionResponse } from '../../../backend/index.js'
-import { DifferentActionParams, useActionResponseHandler } from '../../hooks/index.js'
-import { ActionJSON } from './action-json.interface.js'
-import { callActionApi } from './call-action-api.js'
+import { ActionResponse } from '../../../backend'
+import { DifferentActionParams, useActionResponseHandler } from '../../hooks'
+import { ActionJSON } from './action-json.interface'
+import { callActionApi } from './call-action-api'
 
 export type CallApiFunction<K extends ActionResponse> = () => Promise<AxiosResponse<K>>
 

@@ -1,7 +1,7 @@
-import { flat } from '../../../utils/flat/index.js'
-import { Action, ActionResponse, ActionQueryParameters } from '../action.interface.js'
-import { RecordJSON } from '../../../frontend/interfaces/index.js'
-import Filter from '../../utils/filter/filter.js'
+import { flat } from '../../../utils/flat'
+import { Action, ActionResponse, ActionQueryParameters } from '../action.interface'
+import { RecordJSON } from '../../../frontend/interfaces'
+import Filter from '../../utils/filter/filter'
 
 /**
  * @implements Action
@@ -35,7 +35,7 @@ export const SearchAction: Action<SearchActionResponse> = {
 
     const {
       sortBy = decorated.options?.sort?.sortBy || titlePropertyName,
-      direction = decorated.options?.sort?.direction || 'asc',
+      direction = 'asc',
       filters: customFilters = {},
       perPage = 50,
       page = 1,

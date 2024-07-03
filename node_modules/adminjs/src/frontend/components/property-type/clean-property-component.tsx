@@ -1,7 +1,6 @@
 import React, { FC, useMemo } from 'react'
-
-import { BasePropertyProps } from './base-property-props.js'
-import { BasePropertyComponent } from './base-property-component.js'
+import { BasePropertyProps } from './base-property-props'
+import { BasePropertyComponent } from './base-property-component'
 /**
  * This component is the same as `BasePropertyComponent` but it will not render
  * custom components. Use this in your custom components to render the default

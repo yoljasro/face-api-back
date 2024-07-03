@@ -1,7 +1,6 @@
 import { expect } from 'chai'
-
-import { ResourcesFactory } from './resources-factory.js'
-import { BaseDatabase, BaseResource } from '../../adapters/index.js'
+import { ResourcesFactory } from './resources-factory'
+import { BaseDatabase, BaseResource } from '../../adapters'
 
 describe('ResourcesFactory', function () {
   describe('._convertDatabases', function () {

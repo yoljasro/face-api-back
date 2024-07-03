@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { useNavigate, useLocation } from 'react-router'
+import { useNavigate } from 'react-router'
 import {
   Placeholder, TableRow, TableCell, CheckBox, ButtonGroup,
 } from '@adminjs/design-system'
 
-import BasePropertyComponent from '../../property-type/index.js'
-import { ActionJSON, buildActionClickHandler, RecordJSON, ResourceJSON } from '../../../interfaces/index.js'
-import { display } from './utils/display.js'
-import { ActionResponse, RecordActionResponse } from '../../../../backend/actions/action.interface.js'
-import mergeRecordResponse from '../../../hooks/use-record/merge-record-response.js'
-import { useActionResponseHandler, useTranslation, useModal } from '../../../hooks/index.js'
-import { actionsToButtonGroup } from '../action-header/actions-to-button-group.js'
-import allowOverride from '../../../hoc/allow-override.js'
-import { getResourceElementCss } from '../../../utils/index.js'
+import PropertyType from '../../property-type'
+import { ActionJSON, buildActionClickHandler, RecordJSON, ResourceJSON } from '../../../interfaces'
+import { display } from './utils/display'
+import { ActionResponse, RecordActionResponse } from '../../../../backend/actions/action.interface'
+import mergeRecordResponse from '../../../hooks/use-record/merge-record-response'
+import { useActionResponseHandler } from '../../../hooks'
+import { actionsToButtonGroup } from '../action-header/actions-to-button-group'
+import allowOverride from '../../../hoc/allow-override'
+import { getResourceElementCss } from '../../../utils'
 
 export type RecordInListProps = {
   resource: ResourceJSON;
@@ -30,9 +30,6 @@ const RecordInList: React.FC<RecordInListProps> = (props) => {
   } = props
   const [record, setRecord] = useState<RecordJSON>(recordFromProps)
   const navigate = useNavigate()
-  const location = useLocation()
-  const translateFunctions = useTranslation()
-  const modalFunctions = useModal()
 
   const handleActionCallback = useCallback((actionResponse: ActionResponse) => {
     if (actionResponse.record && !actionResponse.redirectUrl) {
@@ -66,9 +63,6 @@ const RecordInList: React.FC<RecordInListProps> = (props) => {
         params: { resourceId: resource.id, recordId: record.id },
         actionResponseHandler,
         navigate,
-        location,
-        translateFunctions,
-        modalFunctions,
       })(event)
     }
   }
@@ -81,14 +75,11 @@ const RecordInList: React.FC<RecordInListProps> = (props) => {
       params: actionParams,
       actionResponseHandler,
       navigate,
-      location,
-      translateFunctions,
-      modalFunctions,
     })(event)
   )
 
   const buttons = [{
-    icon: 'MoreHorizontal',
+    icon: 'OverflowMenuHorizontal',
     variant: 'light' as const,
     label: undefined,
     'data-testid': 'actions-dropdown',
@@ -96,14 +87,12 @@ const RecordInList: React.FC<RecordInListProps> = (props) => {
       actions: recordActions,
       params: actionParams,
       handleClick: handleActionClick,
-      translateFunctions,
-      modalFunctions,
     }),
   }]
   const contentTag = getResourceElementCss(resource.id, 'table-row')
   return (
-    <TableRow className={isSelected ? 'selected' : 'not-selected'} onClick={handleClick} data-id={record.id} data-css={contentTag}>
-      <TableCell width={0}>
+    <TableRow onClick={handleClick} data-id={record.id} data-css={contentTag}>
+      <TableCell className={isSelected ? 'selected' : 'not-selected'}>
         {onSelect && record.bulkActions.length ? (
           <CheckBox
             onChange={() => onSelect(record)}
@@ -124,7 +113,7 @@ const RecordInList: React.FC<RecordInListProps> = (props) => {
             {isLoading ? (
               <Placeholder style={{ height: 14 }} />
             ) : (
-              <BasePropertyComponent
+              <PropertyType
                 key={property.propertyPath}
                 where="list"
                 property={property}
@@ -135,10 +124,10 @@ const RecordInList: React.FC<RecordInListProps> = (props) => {
           </TableCell>
         )
       })}
-      <TableCell key="options" className="options">
+      <TableCell key="options">
         {recordActions.length ? (
           <ButtonGroup buttons={buttons} />
-        ) : null}
+        ) : ''}
       </TableCell>
     </TableRow>
   )
@@ -149,5 +138,4 @@ const OverridableRecordInList = allowOverride(RecordInList, 'RecordInList')
 export {
   OverridableRecordInList as default,
   OverridableRecordInList as RecordInList,
-  RecordInList as OriginalRecordInList,
 }

@@ -1,7 +1,6 @@
 import { useState } from 'react'
-
-import { RecordJSON } from '../../interfaces/index.js'
-import { UseSelectedRecordsResult } from './use-selected-records-result.type.js'
+import { RecordJSON } from '../../interfaces'
+import { UseSelectedRecordsResult } from './use-selected-records-result.type'
 
 /**
  * @load ./use-selected-records.doc.md

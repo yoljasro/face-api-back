@@ -1,15 +1,13 @@
-import { useLocation, useNavigate } from 'react-router'
+import { useNavigate, useLocation } from 'react-router'
 /* eslint-disable no-param-reassign */
-import type {
-  IconProps,
-  NavigationElementWithChildrenProps,
+import {
   NavigationProps,
+  NavigationElementProps,
+  NavigationElementWithChildrenProps,
 } from '@adminjs/design-system'
 import { useMemo } from 'react'
-
-import { useTranslation } from '../hooks/use-translation.js'
-import { ResourceJSON } from '../interfaces/index.js'
-import useLocalStorage from './use-local-storage/use-local-storage.js'
+import { ResourceJSON } from '../interfaces'
+import useLocalStorage from './use-local-storage/use-local-storage'
 
 const isSelected = (href, location): boolean => {
   const regExp = new RegExp(`${href}($|/)`)
@@ -22,16 +20,15 @@ export function useNavigationResources(
   const [openElements, setOpenElements] = useLocalStorage<Record<string, boolean>>('sidebarElements', {})
   const navigate = useNavigate()
   const location = useLocation()
-  const { translateLabel } = useTranslation()
 
   const enrichResource = useMemo(() => (
     resource: ResourceJSON,
-    icon?: IconProps['icon'],
+    icon?: string,
   ): NavigationElementWithChildrenProps => ({
     href: resource.href || undefined,
     icon,
     isSelected: isSelected(resource.href, location),
-    label: translateLabel(resource.name, resource.id),
+    label: resource.name,
     id: resource.id,
     onClick: (event): void => {
       if (resource.href) {
@@ -52,12 +49,11 @@ export function useNavigationResources(
       if (!resource.navigation || resource.navigation.name === null) {
         memo[key] = enrichResource(resource, resource.navigation?.icon)
       } else if (memo[key] && memo[key].elements && resource.navigation?.name) {
-        memo[key].label = translateLabel(resource.navigation?.name)
-        memo[key].elements?.push?.(enrichResource(resource))
+        (memo[key].elements as Array<NavigationElementProps>).push(enrichResource(resource))
       } else {
         memo[key] = {
           elements: [enrichResource(resource)],
-          label: translateLabel(resource.navigation?.name),
+          label: resource.navigation?.name,
           icon: resource.navigation?.icon,
           onClick: (): void => setOpenElements({
             ...openElements,

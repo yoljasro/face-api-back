@@ -1,6 +1,5 @@
 import { expect } from 'chai'
-
-import { removePath } from './remove-path.js'
+import { removePath } from './remove-path'
 
 describe('removePath', () => {
   let params

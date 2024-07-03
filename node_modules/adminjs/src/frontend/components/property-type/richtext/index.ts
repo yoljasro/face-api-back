@@ -1,6 +1,6 @@
-import Edit from './edit.js'
-import Show from './show.js'
-import List from './list.js'
+import Edit from './edit'
+import Show from './show'
+import List from './list'
 
 export {
   Edit as edit,

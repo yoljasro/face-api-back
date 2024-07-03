@@ -1,8 +1,8 @@
 import { expect } from 'chai'
 import sinon from 'sinon'
-
-import { PropertyType, BaseProperty } from '../../../adapters/property/index.js'
-import { overrideFromOptions } from './override-from-options.js'
+import { PropertyType } from '../../../adapters/property/base-property'
+import { BaseProperty } from '../../../adapters'
+import { overrideFromOptions } from './override-from-options'
 
 describe('overrideFromOptions', () => {
   const propertyName = 'type'

@@ -1,14 +1,12 @@
-import AdminJS from './types/src/index.js'
+import AdminJS from './types/src'
 
-import { ReduxState } from './types/src/frontend/store/store.js'
+import { ReduxState } from './types/src/frontend/store/store'
 
-export * from './types/src/index.js'
+export * from './types/src'
 
 export {
-  AdminJS,
+  AdminJS as default,
   ReduxState,
 }
-
-export default AdminJS
 
 declare const REDUX_STATE: ReduxState

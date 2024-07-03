@@ -1,5 +1,5 @@
 import { i18n as I18n, TFunction, TOptions } from 'i18next'
-import startCase from 'lodash/startCase.js'
+import startCase from 'lodash/startCase'
 
 /**
  * @memberof TranslateFunctions
@@ -7,7 +7,7 @@ import startCase from 'lodash/startCase.js'
  */
 export type TranslateFunction = (
   /**
-   * Translation key which should be translated in a given namespace
+   * kwy which should be translated in a given namespace
    */
   key: string,
   /**
@@ -17,8 +17,8 @@ export type TranslateFunction = (
   /**
    * [Translate options]{@link https://www.i18next.com/overview/configuration-options}
    */
-  options?: TOptions,
-) => string;
+  options?: TOptions
+) => string
 
 /**
  * Translate Functions are the helper functions which you can use to translate
@@ -112,48 +112,27 @@ export interface TranslateFunctions {
    * Finally, when that also fails, it returns startCase of the given message name.
    */
   translateMessage: TranslateFunction;
-  /**
-   * Shortcut for {@link TranslateFunctions#translateComponent}
-   */
-  tc: TranslateFunction;
-  /**
-   * Translates component's labels in the application.
-   * By default, it looks for a [translation key]{@link LocaleTranslations} in
-   * `resource.{resourceId}.components.{label}`, when it doesn't find
-   * that, the lookup is moved to `components.{label}`.
-   * Finally, when that also fails, it returns startCase of the given label.
-   */
-  translateComponent: TranslateFunction;
-  /**
-   * Translates page's labels in the application.
-   * By default, it looks for a [translation key]{@link LocaleTranslations} in
-   * `resource.{resourceId}.pages.{label}`, when it doesn't find
-   * that, the lookup is moved to `pages.{label}`.
-   * Finally, when that also fails, it returns startCase of the given label.
-   */
-  translatePage: TranslateFunction;
 }
+
+export const formatName = (name: string): string => name.split('.').join('&#46;')
 
 const translate = (
   i18n: I18n,
   key: string,
   name: string,
   resourceId?: string | TOptions,
-  options: TOptions = {},
+  options?: TOptions,
 ): string => {
-  // cspell:disable-next-line
-  if (i18n.language === 'cimode') return [key, name].join('.')
-
-  let realOptions: TOptions = { ...options, defaultValue: options.defaultValue ?? startCase(name) }
-  let keys = [`${key}.${name}`]
-
-  if (resourceId && typeof resourceId !== 'string') {
-    realOptions = resourceId
-  } else if (resourceId) {
-    keys = [`resources.${resourceId}.${key}.${name}`, ...keys]
+  const realOptions: TOptions = (typeof resourceId === 'string' ? options : resourceId) || {}
+  const formattedName = formatName(name)
+  let keys = [`${key}.${formattedName}`]
+  if (resourceId) {
+    keys = [`resources.${resourceId}.${key}.${formattedName}`, ...keys]
   }
-
-  return i18n.t(keys, realOptions)
+  if (i18n.exists(keys)) {
+    return i18n.t(keys, realOptions)
+  }
+  return realOptions.defaultValue ?? startCase(name)
 }
 
 export const createFunctions = (i18n: I18n): TranslateFunctions => {
@@ -174,15 +153,7 @@ export const createFunctions = (i18n: I18n): TranslateFunctions => {
   )
 
   const translateMessage: TranslateFunction = (messageName, resourceId, options) => (
-    translate(i18n, 'messages', messageName, resourceId, { ...options, defaultValue: options?.defaultValue ?? messageName })
-  )
-
-  const translateComponent: TranslateFunction = (messageName, resourceId, options) => (
-    translate(i18n, 'components', messageName, resourceId, options)
-  )
-
-  const translatePage: TranslateFunction = (messageName, resourceId, options) => (
-    translate(i18n, 'pages', messageName, resourceId, options)
+    translate(i18n, 'messages', messageName, resourceId, options)
   )
 
   return {
@@ -196,21 +167,7 @@ export const createFunctions = (i18n: I18n): TranslateFunctions => {
     tp: translateProperty,
     translateMessage,
     tm: translateMessage,
-    translateComponent,
-    tc: translateComponent,
-    translatePage,
     t: i18n.t,
     translate: i18n.t,
   }
-}
-
-/**
- * ES Modules exports are immutable thus Sinon cannot create stubs for e.g. createFunctions
- * Wrapping the exports in an object allows Sinon to modify it's properties.
- *
- * This prevents Sinon error from appearing:
- * "TypeError: ES Modules cannot be stubbed"
- */
-export const __testExports = {
-  createFunctions,
 }

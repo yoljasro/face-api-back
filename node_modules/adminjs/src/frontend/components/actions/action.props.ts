@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction } from 'react'
-
-import { ActionJSON, RecordJSON, ResourceJSON } from '../../interfaces/index.js'
+import { ActionJSON, RecordJSON, ResourceJSON } from '../../interfaces'
 
 /**
  * Props which are passed to all action components

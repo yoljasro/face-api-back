@@ -10,7 +10,7 @@
  * @alias CurrentAdmin
  * @memberof AdminJS
  */
-export interface CurrentAdmin {
+export type CurrentAdmin = {
   /**
    * Admin has one required field which is an email
    */
@@ -27,14 +27,6 @@ export interface CurrentAdmin {
    * Id of your admin user
    */
   id?: string;
-  /**
-   * Optional ID of theme to use
-   */
-  theme?: string;
-  /**
-   * Extra metadata specific to given Auth Provider
-   */
-  _auth?: Record<string, any>;
   /**
    * Also you can put as many other fields to it as you like.
    */

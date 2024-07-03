@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 
-import layoutElementParser, { LayoutElement } from './layout-element-parser.js'
+import layoutElementParser, { LayoutElement } from './layout-element-parser'
 
 describe('layoutElementParser', function () {
   const propertyName = 'name'

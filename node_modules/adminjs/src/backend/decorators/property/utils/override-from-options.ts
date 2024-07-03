@@ -1,5 +1,5 @@
-import { BaseProperty } from '../../../adapters/property/index.js'
-import PropertyOptions from '../property-options.interface.js'
+import { BaseProperty } from '../../../adapters'
+import PropertyOptions from '../property-options.interface'
 
 export type OverridableFromOptionsType = keyof Pick<BaseProperty,
   'isSortable' |

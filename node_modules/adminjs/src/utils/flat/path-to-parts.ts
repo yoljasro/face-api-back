@@ -1,4 +1,4 @@
-import { PathParts } from './path-parts.type.js'
+import { PathParts } from './path-parts.type'
 
 /**
  * @memberof module:flat

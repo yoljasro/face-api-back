@@ -1,4 +1,4 @@
-import { ResourceJSON } from '../../interfaces/index.js'
+import { ResourceJSON } from '../../interfaces'
 
 export const RESOURCES_INITIALIZE = 'RESOURCES_INITIALIZE'
 

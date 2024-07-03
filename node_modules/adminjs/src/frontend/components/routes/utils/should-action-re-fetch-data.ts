@@ -1,4 +1,4 @@
-import { RecordActionParams, BulkActionParams, ResourceActionParams } from '../../../../backend/utils/view-helpers/view-helpers.js'
+import { RecordActionParams, BulkActionParams, ResourceActionParams } from '../../../../backend/utils/view-helpers/view-helpers'
 
 type AnyActionParams = RecordActionParams & ResourceActionParams & BulkActionParams
 

@@ -1,13 +1,11 @@
 import path from 'path'
 import { expect } from 'chai'
-import * as url from 'url'
 
-import AdminJS from './adminjs.js'
-import BaseDatabase from './backend/adapters/database/base-database.js'
-import BaseResource from './backend/adapters/resource/base-resource.js'
-import { ComponentLoader } from './backend/utils/component-loader.js'
+import AdminJS from './adminjs'
 
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+import BaseDatabase from './backend/adapters/database/base-database'
+import BaseResource from './backend/adapters/resource/base-resource'
+import { ComponentLoader } from './backend/utils/component-loader'
 
 describe('AdminJS', function () {
   beforeEach(function () {
@@ -52,7 +50,7 @@ describe('AdminJS', function () {
 
   describe('resolveBabelConfigPath', function () {
     it('load .babelrc file', function () {
-      const adminJS = new AdminJS({ bundler: { babelConfig: '../.babelrc.json' } })
+      const adminJS = new AdminJS({ bundler: { babelConfig: '../.babelrc' } })
       expect(adminJS.options.bundler.babelConfig).not.to.undefined
     })
 
@@ -62,14 +60,12 @@ describe('AdminJS', function () {
           '@babel/preset-react',
           ['@babel/preset-env', {
             targets: {
-              node: '18',
+              node: '8',
             },
-            modules: false,
-            loose: true,
           }],
           '@babel/preset-typescript',
         ],
-        plugins: ['@babel/plugin-syntax-import-assertions'],
+        plugins: ['babel-plugin-styled-components'],
         only: ['src/', 'spec/'],
         ignore: [
           'src/frontend/assets/scripts/app-bundle.development.js',
@@ -81,13 +77,13 @@ describe('AdminJS', function () {
       expect(adminJS.options.bundler.babelConfig).not.to.undefined
     })
 
-    it('load babel.config.cjs file', function () {
-      const adminJS = new AdminJS({ bundler: { babelConfig: './babel.test.config.json' } })
+    it('load babel.config.js file', function () {
+      const adminJS = new AdminJS({ bundler: { babelConfig: './babel.test.config.js' } })
       expect(adminJS.options.bundler.babelConfig).not.to.undefined
     })
   })
 
-  describe('ComponentLoader', function () {
+  describe('.bundle', function () {
     const loader = new ComponentLoader()
     afterEach(function () {
       loader.clear()

@@ -1,6 +1,6 @@
-import { ResourceJSON } from '../../../../frontend/interfaces/index.js'
-import { ResourceOptions } from '../resource-options.interface.js'
-import { BaseResource, SupportedDatabasesType } from '../../../adapters/index.js'
+import { ResourceJSON } from '../../../../frontend/interfaces'
+import { ResourceOptions } from '..'
+import { BaseResource, SupportedDatabasesType } from '../../../adapters'
 
 export type DatabaseData = {
   databaseName: BaseResource['databaseName'];

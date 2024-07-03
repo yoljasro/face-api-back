@@ -1,10 +1,10 @@
 import React from 'react'
+import styled from 'styled-components'
 import { cssClass, Text, Box } from '@adminjs/design-system'
-import { styled } from '@adminjs/design-system/styled-components'
 
-import { VersionProps } from '../../../adminjs-options.interface.js'
-import { useTranslation } from '../../hooks/index.js'
-import allowOverride from '../../hoc/allow-override.js'
+import { VersionProps } from '../../../adminjs-options.interface'
+import { useTranslation } from '../../hooks'
+import allowOverride from '../../hoc/allow-override'
 
 export type Props = {
   versions: VersionProps;
@@ -46,5 +46,4 @@ const OverridableVersion = allowOverride(Version, 'Version')
 export {
   OverridableVersion as default,
   OverridableVersion as Version,
-  Version as OriginalVersion,
 }

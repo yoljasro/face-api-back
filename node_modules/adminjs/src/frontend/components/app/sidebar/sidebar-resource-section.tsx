@@ -1,10 +1,9 @@
 import React, { FC } from 'react'
 import { Navigation } from '@adminjs/design-system'
-
-import { useTranslation } from '../../../hooks/use-translation.js'
-import { ResourceJSON } from '../../../interfaces/index.js'
-import allowOverride from '../../../hoc/allow-override.js'
-import { useNavigationResources } from '../../../hooks/index.js'
+import { useTranslation } from '../../../hooks/use-translation'
+import { ResourceJSON } from '../../../interfaces'
+import allowOverride from '../../../hoc/allow-override'
+import { useNavigationResources } from '../../../hooks'
 
 /**
  * @alias SidebarResourceSectionProps
@@ -45,5 +44,5 @@ const SidebarResourceSectionOriginal: FC<SidebarResourceSectionProps> = ({ resou
 // exporting default and named SidebarResourceSection
 const SidebarResourceSection = allowOverride(SidebarResourceSectionOriginal, 'SidebarResourceSection')
 
-export { SidebarResourceSection, SidebarResourceSectionOriginal as OriginalSidebarResourceSection }
+export { SidebarResourceSection }
 export default SidebarResourceSection

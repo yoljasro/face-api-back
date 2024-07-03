@@ -1,6 +1,7 @@
 import { formatCurrencyProperty } from '@adminjs/design-system'
 
-const optionsKeys: string[] = [
+type FormatCurrencyOptions = Parameters<typeof formatCurrencyProperty>[0]
+const optionsKeys: (keyof FormatCurrencyOptions)[] = [
   'value',
   'decimalSeparator',
   'groupSeparator',
@@ -11,7 +12,7 @@ const optionsKeys: string[] = [
   'suffix',
 ]
 
-const pickFormatOptions = (props: Record<string, string>) => {
+const pickFormatOptions = (props: Record<string, string>): FormatCurrencyOptions => {
   const pickedProps = Object.keys(props).reduce((acc, curr) => {
     if (optionsKeys.includes(curr as any)) {
       if (props[curr] !== null && props[curr] !== undefined) {
@@ -19,13 +20,13 @@ const pickFormatOptions = (props: Record<string, string>) => {
       }
     }
     return acc
-  }, {})
+  }, {} as FormatCurrencyOptions)
   return pickedProps
 }
 
 const formatValue = (value: string, props: Record<string, string> = {}): string => {
   const formatOptions = pickFormatOptions({ value, ...props })
-  return formatCurrencyProperty(formatOptions as any)
+  return formatCurrencyProperty(formatOptions)
 }
 
 export default formatValue

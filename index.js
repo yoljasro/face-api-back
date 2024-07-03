@@ -5,12 +5,14 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
-const moment = require('moment-timezone'); // vaqtni Tashkent vaqtiga o'zgartirish uchun
+const moment = require('moment-timezone');
+const AdminJS = require('adminjs');
+const AdminJSExpress = require('@adminjs/express');
+const AdminJSMongoose = require('@adminjs/mongoose');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// MongoDB connection
 mongoose.connect('mongodb+srv://yoljasron:9B4vu5ZWnHf8xl0u@face.60end2q.mongodb.net/', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -20,12 +22,10 @@ mongoose.connect('mongodb+srv://yoljasron:9B4vu5ZWnHf8xl0u@face.60end2q.mongodb.
   console.error('MongoDB connection error:', err);
 });
 
-// Body parser middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Multer setup for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, 'uploads'));
@@ -37,46 +37,37 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Models
 const faceLogSchema = new mongoose.Schema({
   employeeId: String,
   name: String,
   status: String,
   timestamp: Date,
-  files: [String], // Fayl nomlarini saqlash uchun array
-  descriptor: [Number], // descriptor arrayni saqlash uchun
+  files: [String],
+  descriptor: [Number],
 });
 
 const FaceLog = mongoose.model('FaceLog', faceLogSchema);
 
-// Face verification logic
 const verifyFaceLogic = async (descriptor) => {
-  // Bu yerda yuzni aniqlash va tasdiqlash algoritmini qo'llang
-  // descriptorlarni solishtirishni amalga oshirish
-  // Misol uchun:
-  
   const users = await FaceLog.find();
   
   for (const user of users) {
-    // solishtirish logikasini bu yerda yozing
-    // masalan:
     const isMatch = user.descriptor.every((val, index) => val === descriptor[index]);
 
     if (isMatch) {
-      return { id: user.employeeId, name: user.name, descriptor: user.descriptor }; // bu mos keladigan foydalanuvchi ma'lumotlari
+      return { id: user.employeeId, name: user.name, descriptor: user.descriptor };
     }
   }
 
-  return null; // agar mos kelmasa
+  return null;
 };
 
-// Routes
 app.post('/api/verify', async (req, res) => {
   const { descriptor } = req.body;
   try {
     const match = await verifyFaceLogic(descriptor);
     if (match) {
-      const timestamp = moment().tz('Asia/Tashkent').toDate(); // Tashkent vaqti
+      const timestamp = moment().tz('Asia/Tashkent').toDate();
 
       const logEntry = new FaceLog({
         employeeId: match.id,
@@ -100,7 +91,7 @@ app.post('/api/verify', async (req, res) => {
 
 app.post('/api/log', async (req, res) => {
   const { employeeId, name, status } = req.body;
-  const timestamp = moment().tz('Asia/Tashkent').toDate(); // Tashkent vaqti
+  const timestamp = moment().tz('Asia/Tashkent').toDate();
 
   const logEntry = new FaceLog({
     employeeId,
@@ -128,7 +119,7 @@ app.post('/api/upload', upload.array('files', 10), async (req, res) => {
   }
 
   try {
-    const timestamp = moment().tz('Asia/Tashkent').toDate(); // Tashkent vaqti
+    const timestamp = moment().tz('Asia/Tashkent').toDate();
 
     files.forEach(file => {
       console.log(`File uploaded: ${file.filename}`);
@@ -139,8 +130,8 @@ app.post('/api/upload', upload.array('files', 10), async (req, res) => {
       name,
       status: 'uploaded',
       timestamp,
-      files: files.map(file => file.filename), // Fayl nomlarini saqlash
-      descriptor: JSON.parse(descriptor), // descriptorni saqlash
+      files: files.map(file => file.filename),
+      descriptor: JSON.parse(descriptor),
     });
 
     await logEntry.save();
@@ -152,10 +143,8 @@ app.post('/api/upload', upload.array('files', 10), async (req, res) => {
   }
 });
 
-// Serve static files from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Get all logs
 app.get('/api/logs', async (req, res) => {
   try {
     const logs = await FaceLog.find();
@@ -166,7 +155,6 @@ app.get('/api/logs', async (req, res) => {
   }
 });
 
-// Get uploaded files
 app.get('/api/files', (req, res) => {
   const uploadsDir = path.join(__dirname, 'uploads');
   fs.readdir(uploadsDir, (err, files) => {
@@ -177,6 +165,28 @@ app.get('/api/files', (req, res) => {
     res.json(files);
   });
 });
+
+AdminJS.registerAdapter(AdminJSMongoose);
+
+const adminJS = new AdminJS({
+  resources: [
+    { resource: FaceLog, options: { parent: { name: 'Database' } } }
+  ],
+  rootPath: '/admin',
+});
+
+const adminRouter = AdminJSExpress.buildAuthenticatedRouter(adminJS, {
+  authenticate: async (email, password) => {
+    if (email === '1' && password === '1') {
+      return true;
+    }
+    return false;
+  },
+  cookieName: '1',
+  cookiePassword: '1',
+});
+
+app.use(adminJS.options.rootPath, adminRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

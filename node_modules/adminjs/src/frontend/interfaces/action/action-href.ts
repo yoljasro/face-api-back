@@ -1,6 +1,6 @@
-import { RecordActionParams, ViewHelpers } from '../../../backend/utils/view-helpers/index.js'
-import { DifferentActionParams } from '../../hooks/index.js'
-import { ActionJSON } from './action-json.interface.js'
+import { RecordActionParams, ViewHelpers } from '../../../backend/utils/view-helpers'
+import { DifferentActionParams } from '../../hooks'
+import { ActionJSON } from './action-json.interface'
 
 const h = new ViewHelpers()
 
@@ -14,10 +14,6 @@ export const actionHref = (
     return null
   }
 
-  if (params.recordIds?.length) {
-    params.recordIds = [...new Set(params.recordIds)]
-  }
-
   const hrefMap = {
     record: (): string => h.recordActionUrl({
       ...params as RecordActionParams,
@@ -26,7 +22,6 @@ export const actionHref = (
     resource: (): string => h.resourceActionUrl({
       resourceId: params.resourceId,
       actionName,
-      search: params.search,
     }),
     bulk: (): string => h.bulkActionUrl({
       ...params,

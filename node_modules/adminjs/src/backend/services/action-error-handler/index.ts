@@ -1,1 +1,1 @@
-export { default as actionErrorHandler } from './action-error-handler.js'
+export { default as actionErrorHandler } from './action-error-handler'
