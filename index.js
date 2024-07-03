@@ -49,14 +49,25 @@ const faceLogSchema = new mongoose.Schema({
 
 const FaceLog = mongoose.model('FaceLog', faceLogSchema);
 
-// Face verification logic (dummy logic for example)
+// Face verification logic
 const verifyFaceLogic = async (descriptor) => {
   // Bu yerda yuzni aniqlash va tasdiqlash algoritmini qo'llang
-  // Masalan, descriptorlarni solishtirish
-  // ...
+  // descriptorlarni solishtirishni amalga oshirish
+  // Misol uchun:
+  
+  const users = await FaceLog.find();
+  
+  for (const user of users) {
+    // solishtirish logikasini bu yerda yozing
+    // masalan:
+    const isMatch = user.descriptor.every((val, index) => val === descriptor[index]);
 
-  // Misol uchun, agar mos keladigan yuz topilgan bo'lsa:
-  return { id: '12345', name: 'John Doe' }; // Bu o'xshashlik topilgan holatda qaytariladigan obyekt
+    if (isMatch) {
+      return { id: user.employeeId, name: user.name, descriptor: user.descriptor }; // bu mos keladigan foydalanuvchi ma'lumotlari
+    }
+  }
+
+  return null; // agar mos kelmasa
 };
 
 // Routes
@@ -65,7 +76,19 @@ app.post('/api/verify', async (req, res) => {
   try {
     const match = await verifyFaceLogic(descriptor);
     if (match) {
-      res.json(match);
+      const timestamp = moment().tz('Asia/Tashkent').toDate(); // Tashkent vaqti
+
+      const logEntry = new FaceLog({
+        employeeId: match.id,
+        name: match.name,
+        status: 'success',
+        timestamp,
+        descriptor: match.descriptor,
+      });
+
+      await logEntry.save();
+
+      res.json(logEntry);
     } else {
       res.status(404).send('Face not recognized');
     }
@@ -76,7 +99,9 @@ app.post('/api/verify', async (req, res) => {
 });
 
 app.post('/api/log', async (req, res) => {
-  const { employeeId, name, status, timestamp } = req.body;
+  const { employeeId, name, status } = req.body;
+  const timestamp = moment().tz('Asia/Tashkent').toDate(); // Tashkent vaqti
+
   const logEntry = new FaceLog({
     employeeId,
     name,
@@ -95,7 +120,7 @@ app.post('/api/log', async (req, res) => {
 });
 
 app.post('/api/upload', upload.array('files', 10), async (req, res) => {
-  const { employeeId, name, descriptor } = req.body; // descriptorni ham qo'shdik
+  const { employeeId, name, descriptor } = req.body;
   const files = req.files;
 
   if (!employeeId || !name || !descriptor || !files) {
@@ -115,7 +140,7 @@ app.post('/api/upload', upload.array('files', 10), async (req, res) => {
       status: 'uploaded',
       timestamp,
       files: files.map(file => file.filename), // Fayl nomlarini saqlash
-      descriptor, // descriptorni saqlash
+      descriptor: JSON.parse(descriptor), // descriptorni saqlash
     });
 
     await logEntry.save();
