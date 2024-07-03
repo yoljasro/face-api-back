@@ -5,20 +5,19 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
-const moment = require('moment-timezone'); // vaqtni Tashkent vaqtiga o'zgartirish uchun
-const faceapi = require('@vladmandic/face-api'); // Euclidean masofa hisoblash uchun
+const moment = require('moment-timezone'); // Tashkent vaqti uchun
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// MongoDB connection
+// MongoDB ulanishi
 mongoose.connect('mongodb+srv://yoljasron:9B4vu5ZWnHf8xl0u@face.60end2q.mongodb.net/', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => {
-  console.log('Connected to MongoDB');
+  console.log('MongoDB ga ulandi');
 }).catch(err => {
-  console.error('MongoDB connection error:', err);
+  console.error('MongoDB ulanish xatosi:', err);
 });
 
 // Body parser middleware
@@ -26,7 +25,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Multer setup for file uploads
+// Multer fayllar yuklash uchun
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, 'uploads'));
@@ -38,26 +37,26 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Models
+// MongoDB Schema
 const faceLogSchema = new mongoose.Schema({
   employeeId: String,
   name: String,
   status: String,
   timestamp: Date,
-  files: [String], // Fayl nomlarini saqlash uchun array
-  descriptor: [Number], // descriptor arrayni saqlash uchun
+  files: [String], // Fayl nomlari uchun array
+  descriptor: [Number], // descriptor uchun array
 });
 
 const FaceLog = mongoose.model('FaceLog', faceLogSchema);
 
-// Face verification logic
+// Yuzni tasdiqlash logikasi
 const verifyFaceLogic = async (descriptor) => {
   const users = await FaceLog.find();
 
   for (const user of users) {
-    // Euclidean masofani hisoblash uchun face-api.js ning funksiyasidan foydalanamiz
+    // Distance ni hisoblash uchun face-api.jsning 'euclideanDistance' funktsiyasidan foydalanish
     const distance = faceapi.euclideanDistance(user.descriptor, descriptor);
-    if (distance < 0.6) { // bu yerda 0.6 mos kelish chegarasi
+    if (distance < 0.6) { // 0.6 mos kelish chegarasi
       return { id: user.employeeId, name: user.name, descriptor: user.descriptor, files: user.files };
     }
   }
@@ -86,11 +85,11 @@ app.post('/api/verify', async (req, res) => {
 
       res.json(logEntry);
     } else {
-      res.status(404).send('Face not recognized');
+      res.status(404).send('Yuz aniqlanmadi');
     }
   } catch (error) {
-    console.error('Error verifying face:', error);
-    res.status(500).send('Error verifying face');
+    console.error('Yuzni tasdiqlash xatosi:', error);
+    res.status(500).send('Yuzni tasdiqlash xatosi');
   }
 });
 
@@ -107,11 +106,11 @@ app.post('/api/log', async (req, res) => {
 
   try {
     await logEntry.save();
-    console.log('Face data logged successfully');
-    res.status(200).send('Face data logged successfully');
+    console.log('Yuz ma\'lumotlari muvaffaqiyatli yozildi');
+    res.status(200).send('Yuz ma\'lumotlari muvaffaqiyatli yozildi');
   } catch (error) {
-    console.error('Error logging face data:', error);
-    res.status(500).send('Error logging face data');
+    console.error('Yuz ma\'lumotlari yozish xatosi:', error);
+    res.status(500).send('Yuz ma\'lumotlari yozish xatosi');
   }
 });
 
@@ -120,60 +119,59 @@ app.post('/api/upload', upload.array('files', 10), async (req, res) => {
   const files = req.files;
 
   if (!employeeId || !name || !descriptor || !files) {
-    return res.status(400).json({ error: 'Employee ID, name, descriptor, and files are required' });
+    return res.status(400).json({ error: 'Hodim ID, ism, descriptor va fayllar talab qilinadi' });
   }
 
   try {
     const timestamp = moment().tz('Asia/Tashkent').toDate(); // Tashkent vaqti
 
-    files.forEach(file => {
-      console.log(`File uploaded: ${file.filename}`);
-    });
+    const fileNames = files.map(file => file.filename);
+    const parsedDescriptor = JSON.parse(descriptor); // descriptor uchun saqlanadi
 
     const logEntry = new FaceLog({
       employeeId,
       name,
       status: 'uploaded',
       timestamp,
-      files: files.map(file => file.filename), // Fayl nomlarini saqlash
-      descriptor: JSON.parse(descriptor), // descriptorni saqlash
+      files: fileNames,
+      descriptor: parsedDescriptor,
     });
 
     await logEntry.save();
 
-    res.status(200).send('Files and data uploaded successfully');
+    res.status(200).send('Fayllar va ma\'lumotlar muvaffaqiyatli yuklandi');
   } catch (error) {
-    console.error('Error uploading files and data:', error);
-    res.status(500).send('Error uploading files and data');
+    console.error('Fayllarni va ma\'lumotlarni yuklash xatosi:', error);
+    res.status(500).send('Fayllarni va ma\'lumotlarni yuklash xatosi');
   }
 });
 
-// Serve static files from the uploads directory
+// uploads papkasidan static fayllarni xizmat qilish
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Get all logs
+// Barcha yozuvlarni olish
 app.get('/api/logs', async (req, res) => {
   try {
     const logs = await FaceLog.find();
     res.json(logs);
   } catch (error) {
-    console.error('Error fetching logs:', error);
-    res.status(500).send('Error fetching logs');
+    console.error('Yozuvlarni olishda xato:', error);
+    res.status(500).send('Yozuvlarni olishda xato');
   }
 });
 
-// Get uploaded files
+// Yuklangan fayllarni olish
 app.get('/api/files', (req, res) => {
   const uploadsDir = path.join(__dirname, 'uploads');
   fs.readdir(uploadsDir, (err, files) => {
     if (err) {
-      console.error('Error reading uploads directory:', err);
-      return res.status(500).send('Error reading uploads directory');
+      console.error('Yuklanganlar papkasini oqishda xato:', err);
+      return res.status(500).send('Yuklanganlar papkasini o\'qishda xato');
     }
     res.json(files);
   });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server http://localhost:${PORT} da ishlayapti`);
 });
