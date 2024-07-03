@@ -52,18 +52,13 @@ const FaceLog = mongoose.model('FaceLog', faceLogSchema);
 // Face verification logic
 const verifyFaceLogic = async (descriptor) => {
   // Bu yerda yuzni aniqlash va tasdiqlash algoritmini qo'llang
-  // descriptorlarni solishtirishni amalga oshirish
-  // Misol uchun:
-  
   const users = await FaceLog.find();
   
   for (const user of users) {
-    // solishtirish logikasini bu yerda yozing
-    // masalan:
     const isMatch = user.descriptor.every((val, index) => val === descriptor[index]);
 
     if (isMatch) {
-      return { id: user.employeeId, name: user.name, descriptor: user.descriptor }; // bu mos keladigan foydalanuvchi ma'lumotlari
+      return user; // bu mos keladigan foydalanuvchi ma'lumotlari
     }
   }
 
@@ -78,17 +73,12 @@ app.post('/api/verify', async (req, res) => {
     if (match) {
       const timestamp = moment().tz('Asia/Tashkent').toDate(); // Tashkent vaqti
 
-      const logEntry = new FaceLog({
-        employeeId: match.id,
-        name: match.name,
-        status: 'success',
-        timestamp,
-        descriptor: match.descriptor,
-      });
+      match.timestamp = timestamp;
+      match.status = 'success';
 
-      await logEntry.save();
+      await match.save();
 
-      res.json(logEntry);
+      res.json(match);
     } else {
       res.status(404).send('Face not recognized');
     }
@@ -130,17 +120,16 @@ app.post('/api/upload', upload.array('files', 10), async (req, res) => {
   try {
     const timestamp = moment().tz('Asia/Tashkent').toDate(); // Tashkent vaqti
 
-    files.forEach(file => {
-      console.log(`File uploaded: ${file.filename}`);
-    });
+    const fileNames = files.map(file => file.filename);
+    const parsedDescriptor = JSON.parse(descriptor); // descriptorni saqlash
 
     const logEntry = new FaceLog({
       employeeId,
       name,
       status: 'uploaded',
       timestamp,
-      files: files.map(file => file.filename), // Fayl nomlarini saqlash
-      descriptor: JSON.parse(descriptor), // descriptorni saqlash
+      files: fileNames,
+      descriptor: parsedDescriptor,
     });
 
     await logEntry.save();
