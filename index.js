@@ -51,13 +51,12 @@ const FaceLog = mongoose.model('FaceLog', faceLogSchema);
 
 // Face verification logic (dummy logic for example)
 const verifyFaceLogic = async (descriptor) => {
-  // Bu yerda descriptorlarni solishtirish logikasini qo'llang
-  // Masalan, descriptorlarni mavjud bazadagi descriptorlar bilan solishtiring
-  const foundUser = await FaceLog.findOne({ descriptor }); // Bu yerni o'z logikangiz bilan to'ldiring
-  if (foundUser) {
-    return { id: foundUser.employeeId, name: foundUser.name };
-  }
-  return null; // Mos keladigan yuz topilmagan holatda
+  // Bu yerda yuzni aniqlash va tasdiqlash algoritmini qo'llang
+  // Masalan, descriptorlarni solishtirish
+  // ...
+
+  // Misol uchun, agar mos keladigan yuz topilgan bo'lsa:
+  return { id: '12345', name: 'John Doe' }; // Bu o'xshashlik topilgan holatda qaytariladigan obyekt
 };
 
 // Routes
