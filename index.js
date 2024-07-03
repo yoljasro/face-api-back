@@ -1,3 +1,6 @@
+// const AdminJS = require('adminjs');
+
+// Qolgan kodlar shunchaki saqlang
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -6,7 +9,7 @@ const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
 const moment = require('moment-timezone');
-const AdminJS = require('adminjs');
+const AdminJS =  require("adminjs")
 const AdminJSExpress = require('@adminjs/express');
 const AdminJSMongoose = require('@adminjs/mongoose');
 
