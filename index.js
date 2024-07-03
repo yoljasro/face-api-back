@@ -51,19 +51,24 @@ const FaceLog = mongoose.model('FaceLog', faceLogSchema);
 
 // Face verification logic
 const verifyFaceLogic = async (descriptor) => {
+  // Bu yerda yuzni aniqlash va tasdiqlash algoritmini qo'llang
+  // descriptorlarni solishtirishni amalga oshirish
+  // Misol uchun:
+  
   const users = await FaceLog.find();
-
+  
   for (const user of users) {
-    // Keling, masofani hisoblash uchun face-api.jsning 'euclideanDistance' funksiyasidan foydalanamiz
-    const distance = faceapi.euclideanDistance(user.descriptor, descriptor);
-    if (distance < 0.6) { // bu yerda 0.6 mos kelish chegarasi
-      return { id: user.employeeId, name: user.name, descriptor: user.descriptor, files: user.files };
+    // solishtirish logikasini bu yerda yozing
+    // masalan:
+    const isMatch = user.descriptor.every((val, index) => val === descriptor[index]);
+
+    if (isMatch) {
+      return { id: user.employeeId, name: user.name, descriptor: user.descriptor }; // bu mos keladigan foydalanuvchi ma'lumotlari
     }
   }
 
-  return null;
+  return null; // agar mos kelmasa
 };
-
 
 // Routes
 app.post('/api/verify', async (req, res) => {
@@ -79,7 +84,6 @@ app.post('/api/verify', async (req, res) => {
         status: 'success',
         timestamp,
         descriptor: match.descriptor,
-        files: match.files, // Fayllarni ham saqlaymiz
       });
 
       await logEntry.save();
@@ -93,7 +97,6 @@ app.post('/api/verify', async (req, res) => {
     res.status(500).send('Error verifying face');
   }
 });
-
 
 app.post('/api/log', async (req, res) => {
   const { employeeId, name, status } = req.body;
@@ -127,16 +130,17 @@ app.post('/api/upload', upload.array('files', 10), async (req, res) => {
   try {
     const timestamp = moment().tz('Asia/Tashkent').toDate(); // Tashkent vaqti
 
-    const fileNames = files.map(file => file.filename);
-    const parsedDescriptor = JSON.parse(descriptor); // descriptorni saqlash
+    files.forEach(file => {
+      console.log(`File uploaded: ${file.filename}`);
+    });
 
     const logEntry = new FaceLog({
       employeeId,
       name,
       status: 'uploaded',
       timestamp,
-      files: fileNames,
-      descriptor: parsedDescriptor,
+      files: files.map(file => file.filename), // Fayl nomlarini saqlash
+      descriptor: JSON.parse(descriptor), // descriptorni saqlash
     });
 
     await logEntry.save();
