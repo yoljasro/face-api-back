@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
 const moment = require('moment-timezone'); // vaqtni Tashkent vaqtiga o'zgartirish uchun
+const faceapi = require('@vladmandic/face-api'); // Euclidean masofa hisoblash uchun
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -51,18 +52,17 @@ const FaceLog = mongoose.model('FaceLog', faceLogSchema);
 
 // Face verification logic
 const verifyFaceLogic = async (descriptor) => {
-  // Bu yerda yuzni aniqlash va tasdiqlash algoritmini qo'llang
   const users = await FaceLog.find();
-  
-  for (const user of users) {
-    const isMatch = user.descriptor.every((val, index) => val === descriptor[index]);
 
-    if (isMatch) {
-      return user; // bu mos keladigan foydalanuvchi ma'lumotlari
+  for (const user of users) {
+    // Euclidean masofani hisoblash uchun face-api.js ning funksiyasidan foydalanamiz
+    const distance = faceapi.euclideanDistance(user.descriptor, descriptor);
+    if (distance < 0.6) { // bu yerda 0.6 mos kelish chegarasi
+      return { id: user.employeeId, name: user.name, descriptor: user.descriptor, files: user.files };
     }
   }
 
-  return null; // agar mos kelmasa
+  return null;
 };
 
 // Routes
@@ -73,12 +73,18 @@ app.post('/api/verify', async (req, res) => {
     if (match) {
       const timestamp = moment().tz('Asia/Tashkent').toDate(); // Tashkent vaqti
 
-      match.timestamp = timestamp;
-      match.status = 'success';
+      const logEntry = new FaceLog({
+        employeeId: match.id,
+        name: match.name,
+        status: 'success',
+        timestamp,
+        descriptor: match.descriptor,
+        files: match.files, // Fayllarni ham saqlaymiz
+      });
 
-      await match.save();
+      await logEntry.save();
 
-      res.json(match);
+      res.json(logEntry);
     } else {
       res.status(404).send('Face not recognized');
     }
@@ -120,16 +126,17 @@ app.post('/api/upload', upload.array('files', 10), async (req, res) => {
   try {
     const timestamp = moment().tz('Asia/Tashkent').toDate(); // Tashkent vaqti
 
-    const fileNames = files.map(file => file.filename);
-    const parsedDescriptor = JSON.parse(descriptor); // descriptorni saqlash
+    files.forEach(file => {
+      console.log(`File uploaded: ${file.filename}`);
+    });
 
     const logEntry = new FaceLog({
       employeeId,
       name,
       status: 'uploaded',
       timestamp,
-      files: fileNames,
-      descriptor: parsedDescriptor,
+      files: files.map(file => file.filename), // Fayl nomlarini saqlash
+      descriptor: JSON.parse(descriptor), // descriptorni saqlash
     });
 
     await logEntry.save();
