@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
 const moment = require('moment-timezone'); // vaqtni Tashkent vaqtiga o'zgartirish uchun
+const faceapi = require('face-api.js'); // Euclidean masofa hisoblash uchun
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -51,23 +52,17 @@ const FaceLog = mongoose.model('FaceLog', faceLogSchema);
 
 // Face verification logic
 const verifyFaceLogic = async (descriptor) => {
-  // Bu yerda yuzni aniqlash va tasdiqlash algoritmini qo'llang
-  // descriptorlarni solishtirishni amalga oshirish
-  // Misol uchun:
-  
   const users = await FaceLog.find();
-  
-  for (const user of users) {
-    // solishtirish logikasini bu yerda yozing
-    // masalan:
-    const isMatch = user.descriptor.every((val, index) => val === descriptor[index]);
 
-    if (isMatch) {
-      return { id: user.employeeId, name: user.name, descriptor: user.descriptor }; // bu mos keladigan foydalanuvchi ma'lumotlari
+  for (const user of users) {
+    // Euclidean masofani hisoblash uchun face-api.js ning funksiyasidan foydalanamiz
+    const distance = faceapi.euclideanDistance(user.descriptor, descriptor);
+    if (distance < 0.6) { // bu yerda 0.6 mos kelish chegarasi
+      return { id: user.employeeId, name: user.name, descriptor: user.descriptor, files: user.files };
     }
   }
 
-  return null; // agar mos kelmasa
+  return null;
 };
 
 // Routes
@@ -84,6 +79,7 @@ app.post('/api/verify', async (req, res) => {
         status: 'success',
         timestamp,
         descriptor: match.descriptor,
+        files: match.files, // Fayllarni ham saqlaymiz
       });
 
       await logEntry.save();
