@@ -5,6 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
+const moment = require('moment-timezone'); // vaqtni Tashkent vaqtiga o'zgartirish uchun
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -42,18 +43,21 @@ const faceLogSchema = new mongoose.Schema({
   name: String,
   status: String,
   timestamp: Date,
+  files: [String], // Fayl nomlarini saqlash uchun array
+  descriptor: [Number], // descriptor arrayni saqlash uchun
 });
 
 const FaceLog = mongoose.model('FaceLog', faceLogSchema);
 
 // Face verification logic (dummy logic for example)
 const verifyFaceLogic = async (descriptor) => {
-  // Bu yerda yuzni aniqlash va tasdiqlash algoritmini qo'llang
-  // Masalan, descriptorlarni solishtirish
-  // ...
-
-  // Misol uchun, agar mos keladigan yuz topilgan bo'lsa:
-  return { id: '12345', name: 'John Doe' }; // Bu o'xshashlik topilgan holatda qaytariladigan obyekt
+  // Bu yerda descriptorlarni solishtirish logikasini qo'llang
+  // Masalan, descriptorlarni mavjud bazadagi descriptorlar bilan solishtiring
+  const foundUser = await FaceLog.findOne({ descriptor }); // Bu yerni o'z logikangiz bilan to'ldiring
+  if (foundUser) {
+    return { id: foundUser.employeeId, name: foundUser.name };
+  }
+  return null; // Mos keladigan yuz topilmagan holatda
 };
 
 // Routes
@@ -92,22 +96,35 @@ app.post('/api/log', async (req, res) => {
 });
 
 app.post('/api/upload', upload.array('files', 10), async (req, res) => {
-  const { employeeId } = req.body;
+  const { employeeId, name, descriptor } = req.body; // descriptorni ham qo'shdik
   const files = req.files;
 
-  if (!employeeId || !files) {
-    return res.status(400).json({ error: 'Employee ID and files are required' });
+  if (!employeeId || !name || !descriptor || !files) {
+    return res.status(400).json({ error: 'Employee ID, name, descriptor, and files are required' });
   }
 
   try {
+    const timestamp = moment().tz('Asia/Tashkent').toDate(); // Tashkent vaqti
+
     files.forEach(file => {
       console.log(`File uploaded: ${file.filename}`);
     });
 
-    res.status(200).send('Files uploaded successfully');
+    const logEntry = new FaceLog({
+      employeeId,
+      name,
+      status: 'uploaded',
+      timestamp,
+      files: files.map(file => file.filename), // Fayl nomlarini saqlash
+      descriptor, // descriptorni saqlash
+    });
+
+    await logEntry.save();
+
+    res.status(200).send('Files and data uploaded successfully');
   } catch (error) {
-    console.error('Error uploading files:', error);
-    res.status(500).send('Error uploading files');
+    console.error('Error uploading files and data:', error);
+    res.status(500).send('Error uploading files and data');
   }
 });
 
