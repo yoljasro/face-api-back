@@ -159,7 +159,7 @@ app.get('/api/logs', async (req, res) => {
     res.status(500).send('Yozuvlarni olishda xato');
   }
 });
-
+ 
 // Yuklangan fayllarni olish
 app.get('/api/files', (req, res) => {
   const uploadsDir = path.join(__dirname, 'uploads');
@@ -168,7 +168,7 @@ app.get('/api/files', (req, res) => {
       console.error('Yuklanganlar papkasini oqishda xato:', err);
       return res.status(500).send('Yuklanganlar papkasini o\'qishda xato');
     }
-    res.json(files);
+    res.json(files); 
   });
 });
 
