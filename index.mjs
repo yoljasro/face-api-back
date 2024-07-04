@@ -7,8 +7,8 @@ import fs from 'fs';
 import cors from 'cors';
 import moment from 'moment-timezone';
 import AdminJS from 'adminjs';
-import * as AdminJSExpress from '@adminjs/express';
-import * as AdminJSMongoose from '@adminjs/mongoose';
+import AdminJSExpress from '@adminjs/express';
+import AdminJSMongoose from '@adminjs/mongoose';
 
 const app = express();
 const PORT = process.env.PORT || 5000;

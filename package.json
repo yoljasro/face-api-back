@@ -7,9 +7,9 @@
       "start": "nodemon index.mjs"
     },
     "dependencies": {
-      "adminjs": "^6.0.0",
+      "adminjs": "^6.6.0",
       "@adminjs/express": "^4.0.0",
-      "@adminjs/mongoose": "^1.0.0",
+      "@adminjs/mongoose": "^3.0.0",
       "body-parser": "^1.19.0",
       "cors": "^2.8.5",
       "express": "^4.17.1",
