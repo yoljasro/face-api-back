@@ -115,16 +115,12 @@ app.post('/api/upload', upload.array('files', 10), async (req, res) => {
   const { employeeId, name, descriptor } = req.body;
   const files = req.files;
 
-  if (!employeeId || !name || !descriptor || !files) {
-    return res.status(400).json({ error: 'Employee ID, name, descriptor, and files are required' });
+  if (!employeeId || !name || !files) {
+    return res.status(400).json({ error: 'Employee ID, name, and files are required' });
   }
 
   try {
     const timestamp = moment().tz('Asia/Tashkent').toDate();
-
-    files.forEach(file => {
-      console.log(`File uploaded: ${file.filename}`);
-    });
 
     const logEntry = new FaceLog({
       employeeId,
@@ -132,7 +128,7 @@ app.post('/api/upload', upload.array('files', 10), async (req, res) => {
       status: 'uploaded',
       timestamp,
       files: files.map(file => file.filename),
-      descriptor: JSON.parse(descriptor),
+      descriptor: descriptor ? JSON.parse(descriptor) : [],
     });
 
     await logEntry.save();
