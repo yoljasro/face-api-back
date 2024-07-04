@@ -1,3 +1,4 @@
+// Backend kodni yuzni tanishish uchun moslashtirish
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -6,7 +7,6 @@ const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
 const moment = require('moment-timezone'); // vaqtni Tashkent vaqtiga o'zgartirish uchun
-const faceapi = require('face-api.js'); // Euclidean masofa hisoblash uchun
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -50,19 +50,16 @@ const faceLogSchema = new mongoose.Schema({
 
 const FaceLog = mongoose.model('FaceLog', faceLogSchema);
 
-// Face verification logic
+// Euclidean distance hisoblash
+const euclideanDistance = (arr1, arr2) => {
+  return Math.sqrt(arr1.reduce((sum, value, index) => sum + Math.pow(value - arr2[index], 2), 0));
+};
+
+// Face verification logic (placeholder function)
 const verifyFaceLogic = async (descriptor) => {
+  // Placeholder logic to find a match, replace with actual implementation
   const users = await FaceLog.find();
-
-  for (const user of users) {
-    // Euclidean masofani hisoblash uchun face-api.js ning funksiyasidan foydalanamiz
-    const distance = faceapi.euclideanDistance(user.descriptor, descriptor);
-    if (distance < 0.6) { // bu yerda 0.6 mos kelish chegarasi
-      return { id: user.employeeId, name: user.name, descriptor: user.descriptor, files: user.files };
-    }
-  }
-
-  return null;
+  return users.find(user => euclideanDistance(user.descriptor, descriptor) < 0.6);
 };
 
 // Routes
@@ -74,7 +71,7 @@ app.post('/api/verify', async (req, res) => {
       const timestamp = moment().tz('Asia/Tashkent').toDate(); // Tashkent vaqti
 
       const logEntry = new FaceLog({
-        employeeId: match.id,
+        employeeId: match.employeeId,
         name: match.name,
         status: 'success',
         timestamp,
