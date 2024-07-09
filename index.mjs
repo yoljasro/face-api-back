@@ -4,7 +4,6 @@ import mongoose from 'mongoose';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import cors from 'cors';
 import moment from 'moment-timezone';
 import AdminJS from 'adminjs';
 import AdminJSExpress from '@adminjs/express';
@@ -13,7 +12,6 @@ import AdminJSMongoose from '@adminjs/mongoose';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// MongoDB connection
 mongoose.connect('mongodb+srv://yoljasron:9B4vu5ZWnHf8xl0u@face.60end2q.mongodb.net/', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -23,12 +21,9 @@ mongoose.connect('mongodb+srv://yoljasron:9B4vu5ZWnHf8xl0u@face.60end2q.mongodb.
   console.error('MongoDB connection error:', err);
 });
 
-// Body parser middleware
-app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Multer setup for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(process.cwd(), 'uploads'));
@@ -40,7 +35,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Models
 const faceLogSchema = new mongoose.Schema({
   employeeId: String,
   name: String,
@@ -61,14 +55,12 @@ const verifyFaceLogic = async (descriptor) => {
   return users.find(user => euclideanDistance(user.descriptor, descriptor) < 0.6);
 };
 
-// Routes
 app.post('/api/verify', async (req, res) => {
   const { descriptor } = req.body;
   try {
     const match = await verifyFaceLogic(descriptor);
     if (match) {
       const timestamp = moment().tz('Asia/Tashkent').toDate();
-
       const logEntry = new FaceLog({
         employeeId: match.employeeId,
         name: match.name,
@@ -77,9 +69,7 @@ app.post('/api/verify', async (req, res) => {
         descriptor: match.descriptor,
         files: match.files,
       });
-
       await logEntry.save();
-
       res.json(logEntry);
     } else {
       res.status(404).send('Face not recognized');
@@ -93,14 +83,12 @@ app.post('/api/verify', async (req, res) => {
 app.post('/api/log', async (req, res) => {
   const { employeeId, name, status } = req.body;
   const timestamp = moment().tz('Asia/Tashkent').toDate();
-
   const logEntry = new FaceLog({
     employeeId,
     name,
     status,
     timestamp,
   });
-
   try {
     await logEntry.save();
     console.log('Face data logged successfully');
@@ -114,14 +102,11 @@ app.post('/api/log', async (req, res) => {
 app.post('/api/upload', upload.array('files', 10), async (req, res) => {
   const { employeeId, name, descriptor } = req.body;
   const files = req.files;
-
   if (!employeeId || !name || !files) {
     return res.status(400).json({ error: 'Employee ID, name, and files are required' });
   }
-
   try {
     const timestamp = moment().tz('Asia/Tashkent').toDate();
-
     const logEntry = new FaceLog({
       employeeId,
       name,
@@ -130,17 +115,13 @@ app.post('/api/upload', upload.array('files', 10), async (req, res) => {
       files: files.map(file => file.filename),
       descriptor: descriptor ? JSON.parse(descriptor) : [],
     });
-
     await logEntry.save();
-
     res.status(200).send('Files and data uploaded successfully');
   } catch (error) {
     console.error('Error uploading files and data:', error);
     res.status(500).send('Error uploading files and data');
   }
 });
-
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 app.get('/api/logs', async (req, res) => {
   try {
@@ -163,17 +144,47 @@ app.get('/api/files', (req, res) => {
   });
 });
 
-// AdminJS setup
 AdminJS.registerAdapter(AdminJSMongoose);
 
 const adminJs = new AdminJS({
   databases: [mongoose],
   rootPath: '/admin',
+  resources: [
+    {
+      resource: FaceLog,
+      options: {
+        properties: {
+          employeeId: { isVisible: { list: false, show: false, filter: true, edit: false } },
+          files: { 
+            isVisible: { list: false, show: true, filter: true, edit: false },
+            components: {
+              show: AdminJS.bundle('./components/ShowImage.tsx')
+            }
+          },
+          descriptor: { isVisible: { list: false, show: false, filter: true, edit: false } },
+          id: { isVisible: { list: false, show: false, filter: true, edit: false } },
+          status: { isVisible: { list: true, show: true, filter: true, edit: false } },
+          timestamp: { isVisible: { list: true, show: true, filter: true, edit: false } },
+        },
+      },
+    },
+  ],
 });
 
 const router = AdminJSExpress.buildRouter(adminJs);
 
-app.use(adminJs.options.rootPath, router);
+app.use(adminJs.options.rootPath, router);z``
+
+app.delete('/api/clear-logs', async (req, res) => {
+  try {
+    const result = await FaceLog.deleteMany({});
+    console.log(`Deleted ${result.deletedCount} documents`);
+    res.status(200).send(`Deleted ${result.deletedCount} documents`);
+  } catch (error) {
+    console.error('Error clearing logs:', error);
+    res.status(500).send('Error clearing logs');
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
