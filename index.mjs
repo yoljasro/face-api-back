@@ -8,6 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import moment from 'moment-timezone';
+import cors from 'cors'
 import AdminJS from 'adminjs';
 import AdminJSExpress from '@adminjs/express';
 import AdminJSMongoose from '@adminjs/mongoose';
@@ -26,6 +27,7 @@ mongoose.connect('mongodb+srv://yoljasron:9B4vu5ZWnHf8xl0u@face.60end2q.mongodb.
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
