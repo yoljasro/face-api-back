@@ -1,17 +1,18 @@
+// index.mjs
+
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import multer from 'multer';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import fs from 'fs';
 import moment from 'moment-timezone';
 import AdminJS from 'adminjs';
 import AdminJSExpress from '@adminjs/express';
 import AdminJSMongoose from '@adminjs/mongoose';
 
-const app = express();
-const PORT = process.env.PORT || 5000;
-
+// MongoDB connection
 mongoose.connect('mongodb+srv://yoljasron:9B4vu5ZWnHf8xl0u@face.60end2q.mongodb.net/', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -21,9 +22,14 @@ mongoose.connect('mongodb+srv://yoljasron:9B4vu5ZWnHf8xl0u@face.60end2q.mongodb.
   console.error('MongoDB connection error:', err);
 });
 
+// Express setup
+const app = express();
+const PORT = process.env.PORT || 5000;
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Multer setup for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(process.cwd(), 'uploads'));
@@ -35,26 +41,31 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+// Schema for FaceLog
 const faceLogSchema = new mongoose.Schema({
   employeeId: String,
   name: String,
   status: String,
   timestamp: Date,
+  departureTimestamp: Date,
   files: [String],
   descriptor: [Number],
 });
 
 const FaceLog = mongoose.model('FaceLog', faceLogSchema);
 
+// Function to calculate Euclidean distance
 const euclideanDistance = (arr1, arr2) => {
   return Math.sqrt(arr1.reduce((sum, value, index) => sum + Math.pow(value - arr2[index], 2), 0));
 };
 
+// Function to verify face descriptor
 const verifyFaceLogic = async (descriptor) => {
   const users = await FaceLog.find();
   return users.find(user => euclideanDistance(user.descriptor, descriptor) < 0.6);
 };
 
+// API endpoints
 app.post('/api/verify', async (req, res) => {
   const { descriptor } = req.body;
   try {
@@ -69,6 +80,13 @@ app.post('/api/verify', async (req, res) => {
         descriptor: match.descriptor,
         files: match.files,
       });
+
+      // Find the last log entry for the employee to get the previous timestamp
+      const lastLog = await FaceLog.findOne({ employeeId: match.employeeId }).sort({ timestamp: -1 });
+      if (lastLog && lastLog.status === 'success') {
+        logEntry.departureTimestamp = lastLog.timestamp;
+      }
+
       await logEntry.save();
       res.json(logEntry);
     } else {
@@ -144,7 +162,14 @@ app.get('/api/files', (req, res) => {
   });
 });
 
+// AdminJS setup
 AdminJS.registerAdapter(AdminJSMongoose);
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const componentLoader = new AdminJS.ComponentLoader();
+const showImageComponent = componentLoader.add('ShowImage', path.resolve(__dirname, './components/ShowImage.tsx'));
 
 const adminJs = new AdminJS({
   databases: [mongoose],
@@ -155,16 +180,17 @@ const adminJs = new AdminJS({
       options: {
         properties: {
           employeeId: { isVisible: { list: false, show: false, filter: true, edit: false } },
-          files: { 
+          files: {
             isVisible: { list: false, show: true, filter: true, edit: false },
             components: {
-              show: AdminJS.bundle('./components/ShowImage.tsx')
+              show: showImageComponent
             }
           },
           descriptor: { isVisible: { list: false, show: false, filter: true, edit: false } },
           id: { isVisible: { list: false, show: false, filter: true, edit: false } },
           status: { isVisible: { list: true, show: true, filter: true, edit: false } },
           timestamp: { isVisible: { list: true, show: true, filter: true, edit: false } },
+          departureTimestamp: { isVisible: { list: true, show: true, filter: true, edit: false } }, // New field
         },
       },
     },
@@ -172,8 +198,7 @@ const adminJs = new AdminJS({
 });
 
 const router = AdminJSExpress.buildRouter(adminJs);
-
-app.use(adminJs.options.rootPath, router);z``
+app.use(adminJs.options.rootPath, router);
 
 app.delete('/api/clear-logs', async (req, res) => {
   try {

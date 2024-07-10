@@ -1,18 +1,12 @@
-// components/ShowImage.tsx
 import React from 'react';
-import { BasePropertyProps } from 'adminjs';
 
-const ShowImage: React.FC<BasePropertyProps> = (props) => {
+const ShowImage = (props) => {
   const { record } = props;
-  const filePath = record?.params.files;
+  const imageUrl = record.params.files;
 
   return (
     <div>
-      {filePath ? (
-        <img src={`/uploads/${filePath}`} alt="Uploaded File" style={{ width: '100%', height: 'auto' }} />
-      ) : (
-        'No image available'
-      )}
+      <img src={imageUrl} alt="Record Image" />
     </div>
   );
 };
