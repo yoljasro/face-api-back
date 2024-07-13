@@ -54,8 +54,14 @@ const faceLogSchema = new mongoose.Schema({
 
 const FaceLog = mongoose.model('FaceLog', faceLogSchema);
 
+// Flag to prevent multiple writes
+let isWriting = false;
+
 // Function to log face data
 const logFaceData = async (employeeId, name, role) => {
+  if (isWriting) return;
+  isWriting = true;
+
   try {
     const timestamp = moment().tz('Asia/Tashkent').toDate();
     const logEntry = new FaceLog({
@@ -79,28 +85,36 @@ const logFaceData = async (employeeId, name, role) => {
     console.log('Face data logged successfully');
   } catch (error) {
     console.error('Error logging face data:', error);
+  } finally {
+    isWriting = false;
   }
 };
 
 // API endpoints
 app.post('/api/log', async (req, res) => {
   const { employeeId, name, role } = req.body;
-  const timestamp = moment().tz('Asia/Tashkent').toDate();
-  const logEntry = new FaceLog({
-    employeeId,
-    name,
-    role,
-    status: 'uploaded',
-    timestamp,
-  });
+  if (isWriting) return res.status(429).send('Currently processing another request. Please try again.');
+  
+  isWriting = true;
 
   try {
+    const timestamp = moment().tz('Asia/Tashkent').toDate();
+    const logEntry = new FaceLog({
+      employeeId,
+      name,
+      role,
+      status: 'uploaded',
+      timestamp,
+    });
+
     await logEntry.save();
     console.log('Face data logged successfully');
     res.status(200).send('Face data logged successfully');
   } catch (error) {
     console.error('Error logging face data:', error);
     res.status(500).send('Error logging face data');
+  } finally {
+    isWriting = false;
   }
 });
 
