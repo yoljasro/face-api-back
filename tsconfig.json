@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+      "target": "es5",
+      "module": "commonjs",
+      "strict": true,
+      "esModuleInterop": true,
+      "jsx": "react" // Bu qismni qo'shing
+    },
+    "include": [
+      "./src/**/*.ts"
+    ],
+    "files": [
+      "./components/ShowImage.tsx"
+    ]
+  }
+  
