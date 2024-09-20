@@ -4,7 +4,8 @@
     "main": "index.mjs",
     "type": "module",
     "scripts": {
-        "start": "nodemon index.mjs"
+        "start": "nodemon index.mjs",
+        "dev": "nodemon index.mjs",
     },
     "dependencies": {
         "@adminjs/express": "^4.0.0",
